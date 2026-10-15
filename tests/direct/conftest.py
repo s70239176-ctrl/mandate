@@ -14,7 +14,11 @@ DAY = 86400
 HOUR = 3600
 
 # deployment parameters used by the suite
-RETRY_GAP, MAX_UNAVAILABLE, PROPOSAL_EXPIRY = HOUR, 3, 14 * DAY
+RETRY_GAP, MAX_UNAVAILABLE, PROPOSAL_EXPIRY, SCAN_GAP = HOUR, 3, 14 * DAY, 6 * HOUR
+WATCH_URL = "https://news.example.org/energy-watch"
+WATCH_URL2 = "https://regulator.example.org/notices"
+WATCH_PAGE = "Energy desk: Sunfield Solar commissioned a 400 MW plant. WindCo ships turbines on schedule."
+WATCH_BAD_PAGE = "Investigation: Sunfield Solar was found to have documented wage theft and forced overtime at its sites."
 
 SEED = 100000
 SINGLE_BPS, TRADE_BPS = 2000, 1000  # 20% in any one name, 10% per trade -> 20000 / 10000 of 100000
@@ -114,7 +118,7 @@ def world(direct_vm, direct_deploy, direct_alice, direct_bob, direct_charlie):
     direct_vm._match_web_mock = spy_web
     direct_vm._match_llm_mock = spy_llm
 
-    contract = direct_deploy(CONTRACT, RETRY_GAP, MAX_UNAVAILABLE, PROPOSAL_EXPIRY)
+    contract = direct_deploy(CONTRACT, RETRY_GAP, MAX_UNAVAILABLE, PROPOSAL_EXPIRY, SCAN_GAP)
     set_clock(direct_vm, 0)
     payee = type(direct_alice)(bytes([9]) * 20)
     payee2 = type(direct_alice)(bytes([8]) * 20)
@@ -141,12 +145,12 @@ def world(direct_vm, direct_deploy, direct_alice, direct_bob, direct_charlie):
         @classmethod
         def create(cls, sender=None, seed=SEED, **overrides):
             p = dict(name="Green Treasury", mandate=MANDATE, single=SINGLE_BPS, trade=TRADE_BPS, bond=BOND,
-                     appeal_bond=APPEAL_BOND, window=WINDOW, ends=ENDS)
+                     appeal_bond=APPEAL_BOND, window=WINDOW, ends=ENDS, watch=[])
             p.update(overrides)
             direct_vm.sender = sender or direct_alice
             direct_vm.value = seed
             res = contract.create_fund(p["name"], p["mandate"], p["single"], p["trade"], p["bond"],
-                                       p["appeal_bond"], p["window"], p["ends"])
+                                       p["appeal_bond"], p["window"], p["ends"], p["watch"])
             direct_vm.value = 0
             cls.deposited += seed
             if not res["ok"]:
@@ -205,7 +209,7 @@ def world(direct_vm, direct_deploy, direct_alice, direct_bob, direct_charlie):
             direct_vm.strict_mocks = strict
 
         @classmethod
-        def mock_world(cls, llm=None, appeal=None):
+        def mock_world(cls, llm=None, appeal=None, scan=None):
             cls.reset_mocks()
             for url, page in cls.pages.items():
                 pattern = re.escape(url) + "$"
@@ -217,6 +221,8 @@ def world(direct_vm, direct_deploy, direct_alice, direct_bob, direct_charlie):
             direct_vm.mock_llm(r"MANDATE_JUDGE", llm if isinstance(llm, str) else json.dumps(llm))
             appeal = appeal_verdict() if appeal is None else appeal
             direct_vm.mock_llm(r"MANDATE_APPEAL", appeal if isinstance(appeal, str) else json.dumps(appeal))
+            scan = {"flagged": []} if scan is None else scan
+            direct_vm.mock_llm(r"MANDATE_SCAN", scan if isinstance(scan, str) else json.dumps(scan))
 
         @classmethod
         def resolve(cls, pid, llm=None, sender=None):
@@ -229,6 +235,12 @@ def world(direct_vm, direct_deploy, direct_alice, direct_bob, direct_charlie):
             cls.mock_world(None, appeal)
             direct_vm.sender = sender or direct_charlie
             return contract.resolve_appeal(pid)
+
+        @classmethod
+        def scan(cls, fid, flagged=None, sender=None):
+            cls.mock_world(None, None, {"flagged": flagged or []})
+            direct_vm.sender = sender or direct_charlie
+            return contract.scan(fid)
 
         @classmethod
         def execute(cls, pid, sender=None):

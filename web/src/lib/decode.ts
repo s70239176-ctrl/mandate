@@ -48,6 +48,10 @@ export function toFund(r: Raw): Fund {
     positions: (r.positions as Raw[]).map(
       (p): Position => ({ target: String(p.target), payee: String(p.payee), allocated: big(p.allocated), reserved: big(p.reserved) }),
     ),
+    watchUrls: ((r.watch_urls as unknown[]) ?? []).map(String),
+    frozen: ((r.frozen as unknown[]) ?? []).map(String),
+    lastScanAt: num(r.last_scan_at ?? 0),
+    scanCount: num(r.scan_count ?? 0),
     open: Boolean(r.open),
   };
 }
@@ -93,6 +97,7 @@ export function toParams(r: Raw): Params {
     retryGap: num(r.retry_gap),
     maxUnavailable: num(r.max_unavailable),
     proposalExpiry: num(r.proposal_expiry),
+    scanGap: num(r.scan_gap ?? 0),
     maxUrls: num(r.max_urls),
   };
 }
@@ -160,10 +165,15 @@ export const REFUSALS: Record<string, string> = {
   "nothing to redeem": "You have no stake left to redeem in this fund.",
   "nothing to recover": "No failed payment is waiting for this address.",
   "bad recipient": "That is not a valid address.",
+  "bad watch": "Give up to three distinct watch pages.",
+  "target frozen": "The standing watch has frozen this target: its sources document adverse news. A later scan must clear it first.",
+  "no watch sources": "This fund has no watch pages to scan.",
+  "nothing to watch": "There are no held or pending targets to scan yet.",
+  "scan too soon": "Scans are spaced apart; try again after the gap shown.",
 };
 
 /** Refusals that depend on the clock; a dry run may see a stale time, so they never block a send. */
-export const TIME_DEPENDENT = new Set(["fund closed", "window closed", "retry too soon", "not expired yet", "proposal expired", "window open", "fund still open"]);
+export const TIME_DEPENDENT = new Set(["fund closed", "window closed", "retry too soon", "not expired yet", "proposal expired", "window open", "fund still open", "scan too soon"]);
 
 export function describeError(e: unknown): string {
   const cause = (e as { cause?: { data?: { receipt?: { result?: unknown } } } })?.cause;

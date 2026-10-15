@@ -1,5 +1,5 @@
 // Deploy Mandate to Studionet with a throwaway key made in this script (Studionet deploys are gasless).
-// Usage (from web/):  node --experimental-strip-types scripts/deploy.mjs [retry_gap_s] [max_unavailable] [proposal_expiry_s]
+// Usage (from web/):  node --experimental-strip-types scripts/deploy.mjs [retry_gap_s] [max_unavailable] [proposal_expiry_s] [scan_gap_s]
 // Defaults: retry gap 1 h, 3 unreachable attempts, proposals expire after 14 days.
 // These are fixed at deployment forever: there is no admin to change them.
 // Prints the contract address and writes web/.env.local so `npm run dev` points at it.
@@ -11,11 +11,11 @@ import { clientFor, freshKey, paced, sleep } from "./chain-lib.mjs";
 const here = dirname(fileURLToPath(import.meta.url));
 const code = readFileSync(join(here, "..", "..", "contracts", "mandate.py"), "utf8");
 
-const [gap = 3600, attempts = 3, expiry = 1209600] = process.argv.slice(2).map(Number);
+const [gap = 3600, attempts = 3, expiry = 1209600, scanGap = 600] = process.argv.slice(2).map(Number);
 const key = freshKey();
 const client = clientFor(key);
-console.log(`deploying Mandate (retry_gap=${gap}s, max_unavailable=${attempts}, proposal_expiry=${expiry}s)…`);
-const hash = await paced(() => client.deployContract({ code, args: [BigInt(gap), BigInt(attempts), BigInt(expiry)] }));
+console.log(`deploying Mandate (retry_gap=${gap}s, max_unavailable=${attempts}, proposal_expiry=${expiry}s, scan_gap=${scanGap}s)…`);
+const hash = await paced(() => client.deployContract({ code, args: [BigInt(gap), BigInt(attempts), BigInt(expiry), BigInt(scanGap)] }));
 console.log("deploy tx", hash);
 
 let address;

@@ -241,3 +241,43 @@ export async function sendTx(
   onPhase?.("pending");
   return follow(hash, onPhase);
 }
+
+// ------------------------------------------------------------------ the jury behind a transaction
+export interface JuryView {
+  /** Transaction status: PENDING, ACCEPTED, FINALIZED, UNDETERMINED... */
+  status: string;
+  /** What each validator voted on the leader's result: agree, disagree, or idle (did not take part). */
+  votes: { validator: string; vote: string }[];
+  rounds: number;
+}
+
+/** The real jury behind a judging transaction, straight from the node's consensus data. */
+export async function readJury(hash: string): Promise<JuryView | null> {
+  const tx = (await readTx(hash)) as (RawTx & { num_of_rounds?: string | number }) | null;
+  if (!tx) return null;
+  const raw = tx.consensus_data?.votes ?? {};
+  return {
+    status: tx.status ?? "PENDING",
+    votes: Object.entries(raw).map(([validator, vote]) => ({ validator: validator.toLowerCase(), vote: String(vote) })),
+    rounds: Number(tx.num_of_rounds ?? 1),
+  };
+}
+
+// The hash of a judging transaction is remembered in this browser only, so the proposal page can show its jury.
+const memKey = (kind: string, id: number) => `mandate:${CONTRACT.toLowerCase()}:${kind}:${id}`;
+
+export function rememberTx(kind: string, id: number, hash: string): void {
+  try {
+    localStorage.setItem(memKey(kind, id), hash);
+  } catch {
+    /* private mode: the jury panel just won't know the hash */
+  }
+}
+
+export function recallTx(kind: string, id: number): string | null {
+  try {
+    return localStorage.getItem(memKey(kind, id));
+  } catch {
+    return null;
+  }
+}

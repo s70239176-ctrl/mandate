@@ -35,6 +35,12 @@ export interface Fund {
   proposalIds: number[];
   proposalCount: number;
   positions: Position[];
+  /** Frozen watch pages, set at creation. */
+  watchUrls: string[];
+  /** Targets the last scan flagged: no new proposals or executions until a scan clears them. */
+  frozen: string[];
+  lastScanAt: number;
+  scanCount: number;
   open: boolean;
 }
 
@@ -77,6 +83,7 @@ export interface Params {
   retryGap: number;
   maxUnavailable: number;
   proposalExpiry: number;
+  scanGap: number;
   maxUrls: number;
 }
 
