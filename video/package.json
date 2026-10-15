@@ -1,0 +1,9 @@
+{
+  "name": "mandate-video",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Storyboard-driven demo video of the live Mandate app: captures real screens, adds captions and an original synthesized soundtrack, encodes with ffmpeg.",
+  "scripts": { "music": "python music.py", "capture": "node capture.mjs", "build": "node build.mjs" },
+  "dependencies": { "puppeteer-core": "^23.11.1" }
+}

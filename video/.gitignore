@@ -1,0 +1,8 @@
+node_modules/
+frames/
+clips/
+out/
+audio/*.wav
+*.log
+check/
+live.json
