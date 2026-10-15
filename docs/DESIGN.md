@@ -50,5 +50,5 @@
 | 1 | Contract MVP | Loads, lints, full flow in Direct Mode | done: `genvm-lint` passes, 88 tests |
 | 2 | Frontend MVP | Create, contribute, propose, judge, appeal, execute, redeem from the UI | done: builds, 38 unit tests, rendered and spot-checked in a browser without a contract |
 | 3 | Hardening | Bad inputs, failure states, conservation | done in Direct Mode |
-| 4 | Deployment | Deployed to Studionet and exercised end to end under real consensus | **not done** |
+| 4 | Deployment | Deployed to Studionet and exercised under real consensus | deployed; approve and reject rounds run live; appeal/execute/redeem not yet run live |
 | 5 | Submission polish | Live app, contract address, demo, honest limitations | not done |

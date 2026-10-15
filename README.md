@@ -6,7 +6,9 @@ Members fund a treasury and freeze a plain-English **mandate** ("renewable energ
 
 There is no admin key, no operator, no backend model and no oracle. Mandate, caps, bonds and timings are frozen at creation.
 
-> **Status.** The contract is written, linted and tested in GenLayer's Direct Mode (88 tests). The web app type-checks, builds and passes 38 unit tests. **It has not been deployed to a network yet, and the validator-consensus path has not been exercised live.** Direct Mode mocks the web fetches and the model; see [Known limitations](#known-limitations).
+> **Status.** The contract is linted, tested in GenLayer's Direct Mode (88 tests) and **deployed to Studionet**. The web app type-checks, builds and passes 38 unit tests. Two real consensus rounds have been run against the deployment (below). Appeals, execution, expiry and redemption have **only** been exercised in Direct Mode, which mocks the web fetches and the model; see [Known limitations](#known-limitations).
+
+**Live evidence (Studionet).** Contract [`0x9c76FDB101A7c4f810FA438F556d54557711295d`](https://explorer-studio.genlayer.com/address/0x9c76FDB101A7c4f810FA438F556d54557711295d), deployed in tx `0xad8dcadece4855544e067472d0cb82a0a08c3402ab45acc85a3bf75e2f67f6d1`. With a fund created for a renewable-energy mandate, validators fetched real pages and reached consensus on both paths: a proposal citing the Wikipedia *Solar power* page was **approved** (`in_theme: true`, tx `0xdfea8cc4…146dfec9`), and one citing the *Coal* page was **rejected** as a mandate violation with the bond slashed (`in_theme: false`, tx `0xd344524e…07aa960`). Reproduce with `web/scripts/live-propose.mjs`.
 
 ## Why this needs GenLayer
 
@@ -95,12 +97,12 @@ npm run dev                                              # http://localhost:5174
 | | |
 | --- | --- |
 | Network | GenLayer Studionet (chain id `61999`, RPC `https://studio.genlayer.com/api`) |
-| Contract | not deployed yet |
+| Contract | `0x9c76FDB101A7c4f810FA438F556d54557711295d` |
 | Stack | GenLayer Intelligent Contract (Python), React + Vite + TypeScript, `genlayer-js` 1.1.8 |
 
 ## Known limitations
 
-- **Not deployed and not exercised under real consensus.** Direct Mode proves the contract logic with mocked fetches and a mocked model. Real validators may disagree on borderline evidence; the answer space is four booleans so disagreement should be rare, but the contract's fail-safe is to move nothing (the proposal stays pending until it resolves or expires).
+- **Only two consensus paths are exercised live** (approve and reject). The rest is proven in Direct Mode with mocked fetches and a mocked model. Real validators may disagree on borderline evidence; the answer space is four booleans so disagreement should be rare, but the contract's fail-safe is to move nothing (the proposal stays pending until it resolves or expires).
 - **A model reads the evidence.** It can be wrong. The appeal window, the bonds and the deterministic caps bound the damage; they do not remove it. A wrong jury is a protocol appeal.
 - **It reads pages, not prices.** "Watching prices" is out of scope for v1: price moves can only enter as a cited public page.
 - **Proposals are open to anyone with a bond.** The contract does not decide *which* in-mandate allocations are good, only which are inside the mandate. A proposer who can write a convincing in-theme thesis with real evidence can win approval for a poor allocation; members' defense is the appeal.
