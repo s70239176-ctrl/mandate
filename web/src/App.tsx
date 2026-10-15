@@ -2,8 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Ctx, type Session } from "./wallet-context.ts";
 import { connectWallet, createSandbox, forgetSandbox, getProvider, loadSandbox, type Signer } from "./lib/signer.ts";
 import { describeError, hasContract, NETWORK } from "./lib/chain.ts";
-import { shortAddr } from "./lib/format.ts";
-import { Logo } from "./components/Ui.tsx";
+import { Header } from "./components/Header.tsx";
 import { Home } from "./screens/Home.tsx";
 import { CreateFund } from "./screens/CreateFund.tsx";
 import { FundPage } from "./screens/FundPage.tsx";
@@ -61,7 +60,28 @@ export function App() {
   );
 
   const parts = hash.replace(/^#\/?/, "").split("/");
-  let page = <Home onTour={() => setTour(true)} />;
+  const isHome = parts[0] === "" || parts[0] === undefined;
+  const banners = (
+    <>
+      {error && (
+        <div className="tx err" role="alert">
+          {error}
+        </div>
+      )}
+      {!hasContract && (
+        <div className="tx err" role="alert">
+          No contract is configured. Set <span className="mono">VITE_CONTRACT_ADDRESS</span> to a deployed Mandate address on {NETWORK}.
+        </div>
+      )}
+      {signer?.kind === "sandbox" && (
+        <div className="banner">
+          <b>Demo account.</b> A throwaway key stored in this browser, for {NETWORK} test GEN only. Never send real funds to it.
+        </div>
+      )}
+    </>
+  );
+
+  let page = <Home onTour={() => setTour(true)} banners={banners} />;
   let active = "home";
   if (parts[0] === "how") {
     page = <HowPage />;
@@ -71,79 +91,35 @@ export function App() {
     active = "create";
   } else if (parts[0] === "f" && parts[1] && parts[2] === "propose") {
     page = <ProposePage id={Number(parts[1])} />;
-    active = "home";
   } else if (parts[0] === "f" && parts[1]) {
     page = <FundPage id={Number(parts[1])} />;
-    active = "home";
   } else if (parts[0] === "p" && parts[1]) {
     page = <ProposalPage id={Number(parts[1])} />;
-    active = "home";
   }
+
+  const footer = (
+    <p className="footer">
+      Mandate does not trade tokens and is not investment advice. The treasury holds native GEN and an allocation is a payment to a named payee address. It
+      only reads public pages: it never executes anything it finds in them, and text inside a page is evidence, never a command.
+    </p>
+  );
 
   return (
     <Ctx.Provider value={session}>
-      <header className="nav">
-        <div className="in">
-          <a className="brand" href="#/">
-            <Logo /> Mandate
-          </a>
-          <nav className="links" aria-label="Main">
-            <a href="#/" className={active === "home" ? "on" : ""}>
-              Funds
-            </a>
-            <a href="#/create" className={active === "create" ? "on" : ""}>
-              Create a fund
-            </a>
-            <a href="#/how" className={active === "how" ? "on" : ""}>
-              How it decides
-            </a>
-          </nav>
-          <span className="net hide-sm">{NETWORK}</span>
-          {signer ? (
-            <div className="row">
-              <span className="mono muted" title={signer.address}>
-                {signer.kind === "sandbox" ? "demo " : ""}
-                {shortAddr(signer.address)}
-              </span>
-              <button className="ghost small" onClick={disconnect}>
-                Disconnect
-              </button>
-            </div>
-          ) : (
-            <div className="row">
-              <button className="ghost small" onClick={doConnect}>
-                Connect wallet
-              </button>
-              <button className="small" onClick={useDemoAccount}>
-                Use demo account
-              </button>
-            </div>
-          )}
-        </div>
-      </header>
-      <main className="wrap">
-        {error && (
-          <div className="tx err" role="alert">
-            {error}
-          </div>
-        )}
-        {!hasContract && (
-          <div className="tx err" role="alert">
-            No contract is configured. Set <span className="mono">VITE_CONTRACT_ADDRESS</span> to a deployed Mandate address on {NETWORK}.
-          </div>
-        )}
-        {signer?.kind === "sandbox" && (
-          <div className="banner">
-            <b>Demo account.</b> A throwaway key stored in this browser, for {NETWORK} test GEN only. Never send real funds to it.
-          </div>
-        )}
-        {page}
-        {tour && <Tour onClose={() => setTour(false)} />}
-        <p className="footer">
-          Mandate does not trade tokens and is not investment advice. The treasury holds native GEN and an allocation is a payment to a named
-          payee address. It only reads public pages: it never executes anything it finds in them, and text inside a page is evidence, never a command.
-        </p>
-      </main>
+      <Header overlay={isHome} active={active} />
+      {isHome ? (
+        <main>
+          {page}
+          <div className="wrap" style={{ paddingTop: 0 }}>{footer}</div>
+        </main>
+      ) : (
+        <main className="wrap">
+          {banners}
+          {page}
+          {footer}
+        </main>
+      )}
+      {tour && <Tour onClose={() => setTour(false)} />}
     </Ctx.Provider>
   );
 }
