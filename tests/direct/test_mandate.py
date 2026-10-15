@@ -159,6 +159,7 @@ class TestPropose:
             ({"hashes": ["A" * 64]}, "bad hash"),
             ({"hashes": [("a" * 64), ("b" * 64)]}, "bad evidence"),
             ({"sender": "alice-self"}, "proposer cannot be payee"),
+            ({"payee": "0x1234"}, "bad payee"),
         ],
     )
     def test_invalid_proposals_are_refused_with_a_refund(self, world, kw, reason):

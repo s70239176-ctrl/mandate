@@ -72,6 +72,7 @@ _APPEAL_RESULT_KEYS = _APPEAL_FIELDS + ("source",)
 _LABEL_RE = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$")
 _TARGET_RE = re.compile(r"^[a-z0-9]([a-z0-9 .&-]{0,58}[a-z0-9])?$")
 _HASH_RE = re.compile(r"^[0-9a-f]{64}$")
+_ADDR_RE = re.compile(r"^0x[0-9a-fA-F]{40}$")
 _TAG_RE = re.compile(r"<(script|style)(?![A-Za-z0-9_]).*?</\1[ \t\n\r\f\v]*>|<[^>]+>", re.S | re.I | re.A)
 _SPACE_RE = re.compile(r"[ \t\r\f\v]+")
 _BLANKS_RE = re.compile(r"\n(?:[ \t\r\f\v]*\n)+")
@@ -572,7 +573,9 @@ class Mandate(gl.Contract):
         for h in hashes:
             if not isinstance(h, str) or _HASH_RE.match(h) is None:
                 _fail("bad hash")
-        pay = _as_address(payee)
+        if not isinstance(payee, str) or _ADDR_RE.match(payee) is None:
+            _fail("bad payee")
+        pay = Address(payee)
         if pay == who:
             _fail("proposer cannot be payee")
         if int(f.proposal_count) >= MAX_PROPOSALS_PER_FUND:
@@ -735,7 +738,7 @@ class Mandate(gl.Contract):
         return {"ok": True, "id": int(fund_id), "reason": ""}
 
     @gl.public.write.payable
-    def propose(self, fund_id: u256, target: str, payee: Address, amount: u256, thesis: str, urls: list, hashes: list) -> dict:
+    def propose(self, fund_id: u256, target: str, payee: str, amount: u256, thesis: str, urls: list, hashes: list) -> dict:
         value = int(gl.message.value)
         who = self._sender()
         try:
@@ -1061,12 +1064,14 @@ class Mandate(gl.Contract):
             self.failed_total = u256(int(self.failed_total) + value)
 
     @gl.public.write
-    def recover_failed_payment(self, to: Address) -> u256:
+    def recover_failed_payment(self, to: str) -> u256:
         who = self._sender().as_hex.lower()
         owed = int(self.failed_payments[who]) if who in self.failed_payments else 0
         if owed < 1:
             _fail("nothing to recover")
-        recipient = _as_address(to)
+        if not isinstance(to, str) or _ADDR_RE.match(to) is None:
+            _fail("bad recipient")
+        recipient = Address(to)
         self.failed_payments[who] = u256(0)
         self.failed_total = u256(int(self.failed_total) - owed)
         self._pay(recipient, owed)

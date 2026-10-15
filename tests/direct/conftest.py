@@ -179,7 +179,7 @@ def world(direct_vm, direct_deploy, direct_alice, direct_bob, direct_charlie):
             commit = hashes or [cls.hash_of(cls.pages[u] if cls.pages[u] is not None else "never loaded") for u in urls]
             direct_vm.sender = sender or direct_bob
             direct_vm.value = value
-            res = contract.propose(fid, target, payee or cls.payee_a, amount, thesis, urls, commit)
+            res = contract.propose(fid, target, hexof(payee or cls.payee_a), amount, thesis, urls, commit)
             direct_vm.value = 0
             cls.deposited += value
             if not res["ok"]:
