@@ -1,0 +1,92 @@
+/* Theme layer: brings every page onto the Policy Builder look.
+   Near-black surfaces with a cool violet cast, warm portal amber for links and emphasis, violet for the primary action,
+   and green reserved for verification and approval. Sans-serif throughout (no decorative serif). */
+:root {
+  --bg: #050609;
+  --bg-2: #090a10;
+  --surface: #0c0d16;
+  --raised: #141524;
+  --line: rgba(196, 199, 224, 0.13);
+  --line-2: rgba(196, 199, 224, 0.26);
+  --text: #f4f4f7;
+  --muted: #a9acbd;
+  --dim: #7d8094;
+  --mint: #b8f36a;
+  --mint-2: #cdfa8f;
+  --mint-ink: #0b1303;
+  --mint-soft: rgba(184, 243, 106, 0.08);
+  --gold: #ffb879;
+  --gold-soft: rgba(255, 184, 121, 0.08);
+  --blue: #a7c8ff;
+  --accent: #ffc08a;
+  --violet: #6550d9;
+  --serif: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(900px 460px at 82% -8%, rgba(213, 108, 255, 0.1), transparent 62%),
+    radial-gradient(760px 420px at 8% -4%, rgba(255, 184, 121, 0.06), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+}
+a { color: var(--accent); }
+::selection { background: var(--violet); color: #fff; }
+:focus-visible { outline-color: var(--blue); }
+
+/* sans headings, as in the reference */
+h1 { font-family: var(--sans); font-weight: 600; letter-spacing: -0.025em; font-size: 36px; }
+h3 { font-family: var(--sans); font-weight: 600; font-size: 19px; letter-spacing: -0.01em; }
+.big { font-family: var(--sans); font-weight: 500; font-size: 40px; }
+.charter .text { font-family: var(--sans); font-size: 16.5px; line-height: 1.7; color: #f6eedd; font-weight: 400; }
+.fund-card h3 { font-size: 21px; }
+.empty b { font-family: var(--sans); font-size: 18px; font-weight: 600; }
+.eyebrow { color: var(--accent); }
+.crumb a { color: var(--muted); }
+
+/* primary action is violet; ghost and danger variants are unchanged */
+button { background: linear-gradient(90deg, #4636b8, #6550d9); color: #fff; border: 1px solid rgba(160, 150, 255, 0.3); }
+button:hover:not(:disabled) { background: linear-gradient(90deg, #5445ca, #7762e8); }
+button.ghost { background: transparent; border: 1px solid var(--line-2); color: var(--text); }
+button.ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.05); }
+button.danger { background: transparent; }
+button.outline, button.linkbtn, .pb-save, .pb-more, .switch, .pcard, .acct-btn, .acct-menu button, .chipbtn { border-color: revert-layer; }
+.pb-more, button.linkbtn, .acct-menu button { border: 0; }
+.chipbtn { background: transparent; color: var(--muted); border: 1px solid var(--line-2); }
+.chipbtn:hover:not(:disabled), .chipbtn.on { color: var(--accent); border-color: rgba(255, 192, 138, 0.6); background: var(--gold-soft); }
+.pb-save { border: 1px solid rgba(160, 150, 255, 0.35); }
+.pcard { background: rgba(8, 9, 16, 0.66); border: 1px solid var(--mandate-border); }
+.switch { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--mandate-border); }
+.switch.on { background: rgba(184, 243, 106, 0.18); border-color: rgba(184, 243, 106, 0.5); }
+
+input:focus, textarea:focus, select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(167, 200, 255, 0.13); }
+.pb-group input:focus, .pb-group select:focus { box-shadow: none; }
+
+/* surfaces */
+.card, .tile, .tbl, .fund-card, .stat { background: var(--surface); }
+.tbl, .card, .tile, .fund-card { border-color: var(--line); }
+.fund-card:hover { border-color: var(--line-2); }
+th { background: var(--bg-2); }
+tr.link:hover td { background: var(--raised); }
+.charter { background: linear-gradient(180deg, rgba(255, 184, 121, 0.08), transparent 72%), var(--surface); border-color: rgba(255, 184, 121, 0.26); }
+.charter .seal, .tag.gold { color: var(--accent); }
+.tag.gold { border-color: rgba(255, 192, 138, 0.35); }
+.pos-bar::after { background: var(--accent); }
+.step.now::after { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 5px rgba(255, 184, 121, 0.16); }
+.step.now b { color: var(--accent); }
+.timeline li.now::before { background: var(--accent); border-color: var(--accent); }
+.tbar .r { background: var(--accent); }
+.legend i[style*="amber"] { background: var(--accent) !important; }
+.pill.amber { color: var(--accent); border-color: rgba(255, 192, 138, 0.4); background: rgba(255, 184, 121, 0.08); }
+.tour { border-color: rgba(167, 200, 255, 0.4); }
+.tour .count { color: var(--accent); }
+.tour .dots i.on { background: var(--accent); }
+.flowline .box.model { border-color: rgba(184, 243, 106, 0.4); background: rgba(184, 243, 106, 0.06); }
+.flowline .box.code { border-color: rgba(255, 192, 138, 0.35); background: var(--gold-soft); }
+.codeblock mark { background: rgba(255, 184, 121, 0.16); color: var(--accent); }
+.net { border-color: var(--line-2); }
+.net::before { background: var(--mint); box-shadow: 0 0 0 3px var(--mint-soft); }
+.tx { background: var(--surface); }
+dialog.confirm { background: #0b0c15; border-color: var(--line-2); }
+dialog.confirm button:not(.ghost) { background: linear-gradient(90deg, #4636b8, #6550d9); }
+.avatar { background: #b9a9ff; }
