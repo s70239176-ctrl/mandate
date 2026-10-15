@@ -33,7 +33,7 @@ Evidence standard: a named, public source describing the target's actual busines
 
 const ends = Math.floor(Date.now() / 1000) + 60 * 86400;
 const fundTx = await write(clientFor(creator), address, "create_fund",
-  ["Green Transition Treasury", MANDATE, 2500n, 1000n, GEN / 2n, GEN / 2n, BigInt(WINDOW), BigInt(ends), [wiki("Renewable_energy")]],
+  ["Green Transition Treasury", MANDATE, 2500n, 1000n, GEN / 2n, GEN / 2n, BigInt(WINDOW), BigInt(ends), [wiki("Renewable_energy")], GEN / 20n],
   100n * GEN, "ACCEPTED");
 const fundId = note("create_fund", fundTx).id;
 const fund = await view(read, address, "get_fund", [BigInt(fundId)]);
@@ -71,9 +71,30 @@ note("scan", await write(clientFor(creator), address, "scan", [BigInt(fundId)], 
 if (solarVerdict === "approved") {
   console.log(`waiting ${WINDOW + 20}s for the solar appeal window to close…`);
   await sleep((WINDOW + 20) * 1000);
+  // execute now runs a LAST LOOK: validators re-read the evidence live before any GEN moves.
   note("execute solar", await write(clientFor(creator), address, "execute", [BigInt(solar.id)], 0n, "ACCEPTED"));
+  note("execute wind", await write(clientFor(creator), address, "execute", [BigInt(wind.id)], 0n, "ACCEPTED"));
 }
 
+// A second, minimal fund aimed at the standing watch: its watch page documents a fatal incident for a target
+// the fund holds (earmarked), which the mandate excludes. Whatever the validators answer is recorded as-is.
+const watchFund = await write(clientFor(creator), address, "create_fund",
+  ["Watchdog Demo Fund", MANDATE, 5000n, 2000n, GEN / 20n, GEN / 20n, BigInt(WINDOW), BigInt(ends), [wiki("Deepwater_Horizon_oil_spill")], 0n],
+  10n * GEN, "ACCEPTED");
+const watchFundId = note("create_fund (watchdog)", watchFund).id;
+const wfund = await view(read, address, "get_fund", [BigInt(watchFundId)]);
+const dfp = await fingerprintUrl(wiki("Offshore_drilling"));
+const dh = await write(clientFor(proposers[0]), address, "propose",
+  [BigInt(watchFundId), "deepwater horizon", addressOf(freshKey()), 1n * GEN, "Offshore drilling operator, per the cited reference page.", [wiki("Offshore_drilling")], [dfp.hash]],
+  BigInt(wfund.bond), "ACCEPTED");
+note("propose deepwater horizon", dh);
+const scanResult = note("scan (watchdog)", await write(clientFor(creator), address, "scan", [BigInt(watchFundId)], 0n, "ACCEPTED"));
+const retry = await write(clientFor(proposers[1]), address, "propose",
+  [BigInt(watchFundId), "deepwater horizon", addressOf(freshKey()), 1n * GEN, "Second attempt.", [wiki("Offshore_drilling")], [dfp.hash]],
+  BigInt(wfund.bond), "ACCEPTED");
+log.push({ what: "propose to the target after the scan", status: retry.status, revert: retry.revert ?? null, result: returnOf(retry.tx), hash: retry.hash });
+console.log("watchdog scan →", scanResult, "| proposing to it afterwards →", JSON.stringify(returnOf(retry.tx)));
+
 const out = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "docs", "demo-seed.json");
-writeFileSync(out, JSON.stringify({ address, fundId, geothermalProposalLeftPending: geo.id, log }, null, 1));
+writeFileSync(out, JSON.stringify({ address, fundId, watchFundId, geothermalProposalLeftPending: geo.id, log }, null, 1));
 console.log("done; wrote docs/demo-seed.json");

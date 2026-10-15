@@ -4,7 +4,7 @@ import { EXPLORER, CONTRACT, getFund, getProposal, getStake, readJury, recallTx,
 import { fingerprintUrl, isHash } from "../lib/fingerprint.ts";
 import { useLoad, useNow, useTx } from "../hooks.ts";
 import { formatDate, formatGen, shortAddr } from "../lib/format.ts";
-import { noteText, stages, statusInfo } from "../lib/view.ts";
+import { noteText, reasonText, stages, statusInfo } from "../lib/view.ts";
 import { useSession } from "../wallet-context.ts";
 import { CheckRow, Confirm, Copy, ErrorBox, KV, Pill, Section, Skeleton, Stepper, TxStatus } from "../components/Ui.tsx";
 
@@ -86,6 +86,12 @@ export function ProposalPage({ id }: { id: number }) {
         </div>
         <Pill label={s.label} tone={s.tone} />
       </div>
+      {p.reason && (
+        <div className="reason" role="note">
+          <b>Because:</b> {reasonText(p.reason)}
+          <span className="code">{p.reason}</span>
+        </div>
+      )}
       {noteText(p.note) && <p className="muted" style={{ marginTop: 12, maxWidth: "70ch" }}>{noteText(p.note)}</p>}
 
       <div className="card" style={{ marginTop: 24 }}>
@@ -127,6 +133,14 @@ export function ProposalPage({ id }: { id: number }) {
           <CheckRow state={!hasVerdict ? "wait" : p.inTheme ? "ok" : "no"} title="In theme" detail="The target's actual business fits the mandate." value={hasVerdict ? String(p.inTheme) : "—"} />
           <CheckRow state={!hasVerdict ? "wait" : p.excluded ? "no" : "ok"} title="Nothing excluded is documented" value={hasVerdict ? (p.excluded ? "excluded" : "none") : "—"} />
           <CheckRow state={!hasVerdict ? "wait" : p.adverse ? "no" : "ok"} title="No material adverse development" value={hasVerdict ? (p.adverse ? "adverse" : "none") : "—"} />
+          {p.lastlookState && (
+            <CheckRow
+              state={p.lastlookState === "clear" ? "ok" : "no"}
+              title="Last look at execution"
+              detail="Evidence re-read live just before the GEN moves."
+              value={p.lastlookState === "clear" ? "clear" : p.lastlookState === "flagged" ? "blocked" : "unreadable"}
+            />
+          )}
           {jury.data && jury.data.votes.length > 0 && (
             <>
               <div className="jury" aria-label="Validator votes">
@@ -212,7 +226,7 @@ export function ProposalPage({ id }: { id: number }) {
             )}
             {canExecute && (
               <button disabled={act.busy} onClick={() => call("execute", [BigInt(p.id)])}>
-                <ShieldCheck size={16} /> Execute allocation
+                <ShieldCheck size={16} /> Execute (re-reads the evidence first)
               </button>
             )}
             {canExpire && (
@@ -225,7 +239,7 @@ export function ProposalPage({ id }: { id: number }) {
             {open && !judging && !canExecute && !canExpire && !inWindow && <span className="muted">Nothing to do right now.</span>}
           </div>
           {frozen && open && <p className="hint err">This target is frozen by the standing watch, so it cannot execute until a later scan clears it.</p>}
-          <TxStatus state={act.state} judging={judging} doneText="Done." />
+          <TxStatus state={act.state} judging={judging || act.state.kind === "running"} doneText="Done." />
         </div>
       </Section>
 

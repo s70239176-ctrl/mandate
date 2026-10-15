@@ -9,6 +9,8 @@ import { CreateFund } from "./screens/CreateFund.tsx";
 import { FundPage } from "./screens/FundPage.tsx";
 import { ProposePage } from "./screens/ProposePage.tsx";
 import { ProposalPage } from "./screens/ProposalPage.tsx";
+import { HowPage } from "./screens/HowPage.tsx";
+import { Tour } from "./components/Tour.tsx";
 
 function useHashRoute(): string {
   const [hash, setHash] = useState(window.location.hash || "#/");
@@ -28,6 +30,7 @@ export function App() {
   const hash = useHashRoute();
   const [signer, setSigner] = useState<Signer | null>(() => loadSandbox());
   const [error, setError] = useState<string | null>(null);
+  const [tour, setTour] = useState(false);
 
   useEffect(() => {
     getProvider()?.on?.("accountsChanged", (a) => {
@@ -58,9 +61,12 @@ export function App() {
   );
 
   const parts = hash.replace(/^#\/?/, "").split("/");
-  let page = <Home />;
+  let page = <Home onTour={() => setTour(true)} />;
   let active = "home";
-  if (parts[0] === "create") {
+  if (parts[0] === "how") {
+    page = <HowPage />;
+    active = "how";
+  } else if (parts[0] === "create") {
     page = <CreateFund />;
     active = "create";
   } else if (parts[0] === "f" && parts[1] && parts[2] === "propose") {
@@ -87,6 +93,9 @@ export function App() {
             </a>
             <a href="#/create" className={active === "create" ? "on" : ""}>
               Create a fund
+            </a>
+            <a href="#/how" className={active === "how" ? "on" : ""}>
+              How it decides
             </a>
           </nav>
           <span className="net hide-sm">{NETWORK}</span>
@@ -129,6 +138,7 @@ export function App() {
           </div>
         )}
         {page}
+        {tour && <Tour onClose={() => setTour(false)} />}
         <p className="footer">
           Mandate does not trade tokens and is not investment advice. The treasury holds native GEN and an allocation is a payment to a named
           payee address. It only reads public pages: it never executes anything it finds in them, and text inside a page is evidence, never a command.

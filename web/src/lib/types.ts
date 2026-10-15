@@ -41,6 +41,8 @@ export interface Fund {
   frozen: string[];
   lastScanAt: number;
   scanCount: number;
+  /** Paid from idle GEN to whoever settles a step; fixed at creation. */
+  keeperFee: bigint;
   open: boolean;
 }
 
@@ -77,6 +79,28 @@ export interface Proposal {
   appealState: AppealState;
   appealAttempts: number;
   appealedAt: number;
+  /** Why it ended as it did: off_theme | excluded_<kind> | adverse_<kind> | evidence_changed | last_look_... | "" */
+  reason: string;
+  excludedKind: string;
+  adverseKind: string;
+  lastlookState: "" | "clear" | "unavailable" | "flagged";
+  lastlookAttempts: number;
+}
+
+export interface ProposerRecord {
+  address: string;
+  approved: number;
+  rejected: number;
+  executed: number;
+  overturned: number;
+}
+
+export interface Prompts {
+  proposal: string;
+  appeal: string;
+  lastLook: string;
+  scan: string;
+  rules: string[];
 }
 
 export interface Params {

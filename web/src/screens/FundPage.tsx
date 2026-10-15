@@ -88,6 +88,7 @@ export function FundPage({ id }: { id: number }) {
           <span className="tag">{windowText(f.appealWindow)} appeal window</span>
           <span className="tag">proposal bond {formatGen(f.bond)} GEN</span>
           <span className="tag">appeal bond {formatGen(f.appealBond)} GEN</span>
+          {f.keeperFee > 0n && <span className="tag">keeper fee {formatGen(f.keeperFee)} GEN</span>}
         </div>
       </div>
 

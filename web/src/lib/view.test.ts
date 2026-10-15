@@ -98,3 +98,30 @@ test("toFund carries the standing watch", () => {
   assert.deepEqual(f.frozen, ["x"]);
   assert.equal(f.scanCount, 2);
 });
+
+test("reasonText turns reason codes into plain words, including last-look variants", async () => {
+  const { reasonText } = await import("./view.ts");
+  assert.equal(reasonText(""), "");
+  assert.match(reasonText("off_theme"), /in-theme/);
+  assert.match(reasonText("excluded_labor"), /a documented labor-rights violation, which the mandate excludes/);
+  assert.match(reasonText("excluded_sector"), /an excluded sector/);
+  assert.match(reasonText("adverse_insolvency"), /adverse development \(insolvency\)/);
+  assert.match(reasonText("last_look_excluded_safety"), /safety incident.*re-read at execution/);
+  assert.match(reasonText("last_look_adverse_fraud"), /a fraud finding.*re-read at execution/);
+  assert.equal(reasonText("something_new"), "something_new");
+});
+
+test("a proposal blocked at execution reads as approved-then-blocked", async () => {
+  const { stages, statusInfo } = await import("./view.ts");
+  const p = toProposal(rawProposal({ status: "REJECTED", evidence_state: "ok", note: "last_look_blocked", reason: "last_look_adverse_fraud", lastlook_state: "flagged" }));
+  assert.equal(statusInfo(p).label, "Blocked at execution");
+  assert.deepEqual(stages(p, 0).map((s) => s.state), ["done", "done", "done", "bad"]);
+  assert.equal(p.reason, "last_look_adverse_fraud");
+  assert.equal(p.lastlookState, "flagged");
+});
+
+test("toFund and toProposal tolerate a contract that predates v3 fields", () => {
+  const p = toProposal(rawProposal());
+  assert.equal(p.reason, "");
+  assert.equal(p.excludedKind, "none");
+});

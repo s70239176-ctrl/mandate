@@ -12,7 +12,7 @@
 
 **The decision GenLayer makes.** For one proposal, over 1 to 3 committed public pages: `evidence_available`, `in_theme`, `excluded`, `adverse`. For one appeal: `evidence_available`, `substantiated`.
 
-**MVP features.** The standing watch (`scan`); create a fund with a frozen mandate; contribute; propose with committed evidence; jury verdict; appeal window; appeal; execute; expire; redeem; failed-payment recovery.
+**MVP features.** Last look at execution; reason codes; keeper fees; proposer track records; the standing watch (`scan`); create a fund with a frozen mandate; contribute; propose with committed evidence; jury verdict; appeal window; appeal; execute; expire; redeem; failed-payment recovery.
 
 **Out of scope.** Token trading, price feeds, other assets, scheduled scanning, weighting schemes, governance over the mandate (it is frozen), an admin.
 
@@ -36,6 +36,14 @@
 
 **Evidence commitment.** `clean_page` strips markup only from real HTML, defuses our own prompt delimiters, collapses whitespace, and truncates to 8,000 code points; `content_hash` is sha256 of that text. The TypeScript mirror is verified against vectors the contract generates.
 
+**Last look.** `execute` runs the same leader/validator pattern over the proposal's evidence URLs, read live with no fingerprint check (pages may legitimately change). The model returns `{excluded, adverse}` plus kinds; validators compare `(excluded, adverse, source)`. Clear: the payout proceeds in the same transaction. Flagged: the proposal ends REJECTED with note `last_look_blocked`, the earmark is released and the bond returned. Unavailable: counted, retried after `retry_gap`, and after `max_unavailable` attempts it fails closed (also bond returned).
+
+**Reason codes.** Results carry `kinds` = `{excluded_kind, adverse_kind}`. `normalize_kinds` forces `none` exactly when the boolean is false and collapses unknown or missing kinds to `other`; `core_of` strips the kinds so validators never compare them. The stored `reason` is derived deterministically from the booleans and the leader's kind.
+
+**Keeper fees.** `keeper_fee` is fixed at creation (at most 1% of the seed). `_keeper` pays the caller from `pool - reserved` only, after a settled step (jury round, appeal, execution, block, expiry or scan), and skips the payment when idle GEN is below the fee.
+
+**Track records.** `stat_counts` keyed `kind|address` plus a bounded roster (200 proposers); `list_proposers` ranks by executions.
+
 **Standing watch.** `scan` runs the same leader/validator pattern over the fund's frozen watch pages and its held targets (executed or earmarked, plus anything already frozen so it can be cleared). The jury returns `{flagged: [names]}`; each name must be one of the targets it was given or the whole result is invalid, and the contract compares the sorted set. The result replaces the frozen set. `propose` and `execute` refuse a frozen target. If any watch page cannot be read the scan returns `unavailable` and changes nothing. It can only block, so a manipulated watch page can pause a holding but never move money.
 
 **Prompt design.** Fixed instructions; mandate and thesis and each page fenced in delimited blocks; an explicit rule that page text is data and never instructions; strict four-key JSON; prose outside the schema dropped, never compared. Concentration and size are deliberately not in the prompt.
@@ -49,8 +57,8 @@
 | Phase | Goal | Exit criteria | State |
 | --- | --- | --- | --- |
 | 0 | Idea and design | This document | done |
-| 1 | Contract MVP | Loads, lints, full flow in Direct Mode | done: `genvm-lint` passes, 109 tests |
-| 2 | Frontend MVP | Create, contribute, propose, judge, appeal, execute, redeem from the UI | done: builds, 38 unit tests, rendered and spot-checked in a browser without a contract |
+| 1 | Contract MVP | Loads, lints, full flow in Direct Mode | done: `genvm-lint` passes, 143 tests |
+| 2 | Frontend MVP | Create, contribute, propose, judge, appeal, execute, redeem from the UI | done: builds, 43 unit tests, rendered and spot-checked in a browser without a contract |
 | 3 | Hardening | Bad inputs, failure states, conservation | done in Direct Mode |
-| 4 | Deployment | Deployed to Studionet and exercised under real consensus | deployed and seeded; approve, reject, appeal, scan and execute rounds run live; expire and redeem not yet run live |
+| 4 | Deployment | Deployed to Studionet and exercised under real consensus | deployed and seeded; approve, reject, appeal, flagging scan, and execute-after-last-look run live; blocked-at-execution, upheld appeal, expire and redeem not yet run live |
 | 5 | Submission polish | Live app, contract address, demo, honest limitations | not done |

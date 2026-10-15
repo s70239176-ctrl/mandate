@@ -57,11 +57,13 @@ export function CreateFund() {
   const [appealBond, setAppealBond] = useState("0.1");
   const [windowS, setWindowS] = useState(172800);
   const [days, setDays] = useState("30");
+  const [keeper, setKeeper] = useState("0.05");
   const [confirming, setConfirming] = useState(false);
 
   const seedWei = parseGen(seed);
   const bondWei = parseGen(bond);
   const appealWei = parseGen(appealBond);
+  const keeperWei = parseGen(keeper);
   const singleBps = Math.round(Number(single) * 100);
   const tradeBps = Math.round(Number(trade) * 100);
   const dayN = Number(days);
@@ -73,6 +75,7 @@ export function CreateFund() {
   if (!(tradeBps >= 10 && tradeBps <= singleBps)) problems.push("The per-trade cap must be at least 0.1% and no more than the single-name cap.");
   if (!seedWei || seedWei < 1n) problems.push("Seed capital must be a positive amount of GEN.");
   if (!bondWei || bondWei < 1n || !appealWei || appealWei < 1n) problems.push("Both bonds must be positive amounts of GEN.");
+  if (keeperWei === null || (seedWei !== null && keeperWei > seedWei / 100n)) problems.push("The keeper fee can be at most 1% of the seed capital.");
   if (!(dayN >= 1 && dayN <= 365)) problems.push("The fund must run between 1 and 365 days.");
   if (watchUrls.length > 3 || watchUrls.some((u) => !/^https:\/\//.test(u))) problems.push("Watch pages must be up to three public https URLs.");
 
@@ -93,7 +96,7 @@ export function CreateFund() {
       return sendTx(
         signer,
         "create_fund",
-        [name.trim(), mandate, BigInt(singleBps), BigInt(tradeBps), bondWei!, appealWei!, BigInt(windowS), BigInt(ends), watchUrls],
+        [name.trim(), mandate, BigInt(singleBps), BigInt(tradeBps), bondWei!, appealWei!, BigInt(windowS), BigInt(ends), watchUrls, keeperWei ?? 0n],
         seedWei!,
         onPhase,
       );
@@ -168,6 +171,13 @@ export function CreateFund() {
             <label htmlFor="days">Runs for (days)</label>
             <input id="days" inputMode="numeric" value={days} onChange={(e) => setDays(e.target.value)} />
           </div>
+          <div>
+            <label htmlFor="keeper">Keeper fee per step (GEN)</label>
+            <input id="keeper" inputMode="decimal" value={keeper} onChange={(e) => setKeeper(e.target.value)} />
+          </div>
+        </div>
+        <div className="hint">
+          Paid from idle GEN to whoever settles a step (a jury round, an execution, a scan, an expiry), so nothing needs an operator. At most 1% of the seed.
         </div>
       </div>
 

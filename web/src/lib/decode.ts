@@ -2,7 +2,7 @@
  * Pure decoding: contract view dictionaries -> typed objects, and contract refusals -> plain language.
  * No network, no environment: unit-tested in node.
  */
-import type { AppealState, BondOutcome, EvidenceState, Fund, Params, Position, Proposal, ProposalStatus } from "./types.ts";
+import type { AppealState, BondOutcome, EvidenceState, Fund, Params, Position, Prompts, Proposal, ProposalStatus, ProposerRecord } from "./types.ts";
 
 /** genlayer-js may hand back Maps for contract dicts; normalise to plain objects (bigints kept). */
 export function plain(v: unknown): unknown {
@@ -52,6 +52,7 @@ export function toFund(r: Raw): Fund {
     frozen: ((r.frozen as unknown[]) ?? []).map(String),
     lastScanAt: num(r.last_scan_at ?? 0),
     scanCount: num(r.scan_count ?? 0),
+    keeperFee: big(r.keeper_fee ?? 0),
     open: Boolean(r.open),
   };
 }
@@ -89,6 +90,25 @@ export function toProposal(r: Raw): Proposal {
     appealState: String(r.appeal_state ?? "") as AppealState,
     appealAttempts: num(r.appeal_attempts ?? 0),
     appealedAt: num(r.appealed_at ?? 0),
+    reason: String(r.reason ?? ""),
+    excludedKind: String(r.excluded_kind ?? "none"),
+    adverseKind: String(r.adverse_kind ?? "none"),
+    lastlookState: String(r.lastlook_state ?? "") as Proposal["lastlookState"],
+    lastlookAttempts: num(r.lastlook_attempts ?? 0),
+  };
+}
+
+export function toProposer(r: Raw): ProposerRecord {
+  return { address: addr(r.address), approved: num(r.approved), rejected: num(r.rejected), executed: num(r.executed), overturned: num(r.overturned) };
+}
+
+export function toPrompts(r: Raw): Prompts {
+  return {
+    proposal: String(r.proposal),
+    appeal: String(r.appeal),
+    lastLook: String(r.last_look),
+    scan: String(r.scan),
+    rules: ((r.deterministic_rules as unknown[]) ?? []).map(String),
   };
 }
 
@@ -165,6 +185,7 @@ export const REFUSALS: Record<string, string> = {
   "nothing to redeem": "You have no stake left to redeem in this fund.",
   "nothing to recover": "No failed payment is waiting for this address.",
   "bad recipient": "That is not a valid address.",
+  "bad keeper fee": "The keeper fee can be at most 1% of the seed capital.",
   "bad watch": "Give up to three distinct watch pages.",
   "target frozen": "The standing watch has frozen this target: its sources document adverse news. A later scan must clear it first.",
   "no watch sources": "This fund has no watch pages to scan.",

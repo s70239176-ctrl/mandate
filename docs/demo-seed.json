@@ -1,6 +1,7 @@
 {
- "address": "0x2dE196c3203a77bB420aC696c7eb3CeC6EE16A68",
+ "address": "0x91bCDA69Bedb0a5F15E88e37a36CAcEC92a09646",
  "fundId": 1,
+ "watchFundId": 2,
  "geothermalProposalLeftPending": 5,
  "log": [
   {
@@ -12,7 +13,7 @@
     "ok": true,
     "reason": ""
    },
-   "hash": "0x2f309f0dee230992dc310d3dfc732864e87d5b301ab4a9f8f3345302868a6c67"
+   "hash": "0xe5eeb7d1b72f59d19786f442efe2434d5a9422800aec6ed8e5fd406cb1a1f7a4"
   },
   {
    "what": "propose utility-scale solar",
@@ -23,7 +24,7 @@
     "ok": true,
     "reason": ""
    },
-   "hash": "0xbf56207d9952165e8fd11dcca22883930280f9fa3efabb3b12f3222ac2e85dde"
+   "hash": "0xb007f1cec24efbe582eaf204918ef0b025a8c2537f71df2276704afb742afb66"
   },
   {
    "what": "propose onshore wind",
@@ -34,7 +35,7 @@
     "ok": true,
     "reason": ""
    },
-   "hash": "0xdc85f331754c6b3cf725d2f5570b987f357a16c30909771144ff9f6c428cd6e9"
+   "hash": "0x0a903291226a09e6ce1fd355a35124f8e26829f6bf616502f6aa5bb2e5d71a98"
   },
   {
    "what": "propose coal mining",
@@ -45,7 +46,7 @@
     "ok": true,
     "reason": ""
    },
-   "hash": "0x91bda379df3e676833191e83ae25d60f2860bcb2f68ef1e9460333b0ef17e9bc"
+   "hash": "0x24ccce8f92d036d77d6e0dbb313dff2b26ea6b52d534a760b04919e365f0d670"
   },
   {
    "what": "propose hydropower",
@@ -56,7 +57,7 @@
     "ok": true,
     "reason": ""
    },
-   "hash": "0x248e96a050e29ee5a57721db4fd7c3519207bcb3f3947ad4d425aee305a9f651"
+   "hash": "0x8a6cfc7c89b2947343525b30541fee838ed9af1532dbf436cb80d35b604bc7a6"
   },
   {
    "what": "propose geothermal",
@@ -67,35 +68,35 @@
     "ok": true,
     "reason": ""
    },
-   "hash": "0x3739b2e250d0b4f2ce79821a7af5fbb5c48e42d6e4dbbf7f78477850cf9939e7"
+   "hash": "0x7de8a94424ee9bcbffed8606a47c17c4045ff6c1e52cc8524142771f5025a481"
   },
   {
    "what": "resolve solar",
    "status": "ACCEPTED",
    "revert": null,
    "result": "approved",
-   "hash": "0xaed01100ad49a563802d544513e5960d4eb30cbe2218a442dd363d66484e8af2"
+   "hash": "0xdf0187594d5f02b515d0f7310829b41259649588f3aebb0846d6a8dbc919e918"
   },
   {
    "what": "resolve coal",
    "status": "ACCEPTED",
    "revert": null,
    "result": "rejected",
-   "hash": "0x8916c0b568803d2c1b70ce5d1d531c76c4e6caf3baa56ed0cba0c9115138ab91"
+   "hash": "0xb3ff3192960916aec568dd5320524673c8a9003ead12fce3bf6e95e28cacbe51"
   },
   {
    "what": "resolve wind",
    "status": "ACCEPTED",
    "revert": null,
    "result": "approved",
-   "hash": "0xf096c0cc507c8d2a6e9f2b2c81b1948181f3b8d4e4603452877bc207485d8954"
+   "hash": "0x5d321a8c61f555a57c12799a698f82e667c25192c1dac1b7305800988fc2ba2f"
   },
   {
    "what": "resolve hydro",
    "status": "ACCEPTED",
    "revert": null,
    "result": "approved",
-   "hash": "0x68643d45bfaf62cde603c0200449c25c21a75964e705e98bc673c7304b105167"
+   "hash": "0xf4d318d980ba095c4c7ad2ff78d909cd2b405d9a260723227abae2186d5a4c3a"
   },
   {
    "what": "appeal wind",
@@ -106,28 +107,75 @@
     "ok": true,
     "reason": ""
    },
-   "hash": "0x6cd3c2eb15f2dc0f939b5ba7007e4f53f50fcaca85e648fb9ef3ed31853dfb9a"
+   "hash": "0x50e472bd5bac970b312c0b1172de2112485d273953c29650c292b4ccb5445b73"
   },
   {
    "what": "resolve_appeal wind",
    "status": "ACCEPTED",
    "revert": null,
    "result": "dismissed",
-   "hash": "0x798fa8e4e0f8b97e388f5d11bf89f5ee43a6d1d318ce5bf04c45ed65f779dc9e"
+   "hash": "0x4954ae20470b7ffa44e172c54d71f474317244f409a209a1d97d091a586a5f44"
   },
   {
    "what": "scan",
    "status": "ACCEPTED",
    "revert": null,
    "result": "clear",
-   "hash": "0xfccbb839e294c27725f82a8bbcd29cf4847c871ccd431de7428e131785194d29"
+   "hash": "0xf66a828d293f61b1a7b3ed19d8494338bd84032a9e7ec8297b2fac57fb0353e4"
   },
   {
    "what": "execute solar",
    "status": "ACCEPTED",
    "revert": null,
    "result": "executed",
-   "hash": "0xdd7fddff41a930b4d88ea84280a033fdbf5330985d2848e7ac41d9536b023fa2"
+   "hash": "0x34b3d3b07b0374b5a881ab73af1fd7e6d501422c69cf98ac80b13850e6317f2d"
+  },
+  {
+   "what": "execute wind",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": "executed",
+   "hash": "0x40740cd7446ebe27cf277827756c3c49ac61735b192c056fab507d4be63dd728"
+  },
+  {
+   "what": "create_fund (watchdog)",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": {
+    "id": 2,
+    "ok": true,
+    "reason": ""
+   },
+   "hash": "0x69b5fa63be2dbacb47c2106b46332f87d53e631169e837acb076b76bb1c9873b"
+  },
+  {
+   "what": "propose deepwater horizon",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": {
+    "id": 6,
+    "ok": true,
+    "reason": ""
+   },
+   "hash": "0xa9ffabc4b5ec556985cb705aede83e41d3b01aea7a22dc41bf22808b62a13a9e"
+  },
+  {
+   "what": "scan (watchdog)",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": "flagged",
+   "hash": "0x5482702539843f592821192266005a240b07961d77f65bbb1c73e116970e9577"
+  },
+  {
+   "what": "propose to the target after the scan",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": {
+    "id": 0,
+    "ok": false,
+    "reason": "target frozen"
+   },
+   "hash": "0xaaf82ff8b5eb2f544f5a1e565400551e2b1a600ed51b41b3572cc0fcd449c78a"
   }
  ]
 }

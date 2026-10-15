@@ -1,13 +1,14 @@
-import { ArrowRight, Eye, Gavel, Lock } from "lucide-react";
-import { hasContract, listFunds } from "../lib/chain.ts";
+import { ArrowRight, Eye, Gavel, Lock, Play } from "lucide-react";
+import { hasContract, listFunds, listProposers } from "../lib/chain.ts";
 import { useLoad, useNow } from "../hooks.ts";
-import { formatGen, timeLeft } from "../lib/format.ts";
+import { formatGen, shortAddr, timeLeft } from "../lib/format.ts";
 import { fundSummary } from "../lib/view.ts";
 import { Empty, ErrorBox, Section, Skeleton } from "../components/Ui.tsx";
 
-export function Home() {
+export function Home({ onTour }: { onTour: () => void }) {
   const now = useNow();
   const feed = useLoad(() => (hasContract ? listFunds(0, 20) : Promise.resolve(null)), []);
+  const board = useLoad(() => (hasContract ? listProposers(8) : Promise.resolve([])), []);
   const funds = feed.data?.items ?? [];
   const totalIdle = funds.reduce((a, f) => a + f.free, 0n);
   const totalAllocated = funds.reduce((a, f) => a + f.allocated, 0n);
@@ -36,6 +37,11 @@ export function Home() {
               <a href="#/create">
                 <button className="big-cta">Create a fund</button>
               </a>
+            )}
+            {funds.length > 0 && (
+              <button className="ghost big-cta" onClick={onTour}>
+                <Play size={15} /> 60-second tour
+              </button>
             )}
             {funds.length > 0 && (
               <a href="#/create">
@@ -140,6 +146,31 @@ export function Home() {
           ))}
         </div>
       </Section>
+
+      {board.data && board.data.length > 0 && (
+        <Section title="Proposer track records" aside={<span className="dim" style={{ fontSize: 12.5 }}>public, on-chain, across every fund</span>}>
+          <div className="tbl board">
+            <div className="rowline hd">
+              <span>#</span>
+              <span>Proposer</span>
+              <span className="n">Exec</span>
+              <span className="n">Appr</span>
+              <span className="n">Rej</span>
+              <span className="n">Overt</span>
+            </div>
+            {board.data.map((r, i) => (
+              <div key={r.address} className="rowline">
+                <span className="dim num">{i + 1}</span>
+                <span className="num">{shortAddr(r.address)}</span>
+                <span className="n mint">{r.executed}</span>
+                <span className="n">{r.approved}</span>
+                <span className="n">{r.rejected}</span>
+                <span className="n">{r.overturned}</span>
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
     </>
   );
 }

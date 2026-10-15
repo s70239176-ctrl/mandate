@@ -145,12 +145,12 @@ def world(direct_vm, direct_deploy, direct_alice, direct_bob, direct_charlie):
         @classmethod
         def create(cls, sender=None, seed=SEED, **overrides):
             p = dict(name="Green Treasury", mandate=MANDATE, single=SINGLE_BPS, trade=TRADE_BPS, bond=BOND,
-                     appeal_bond=APPEAL_BOND, window=WINDOW, ends=ENDS, watch=[])
+                     appeal_bond=APPEAL_BOND, window=WINDOW, ends=ENDS, watch=[], keeper=0)
             p.update(overrides)
             direct_vm.sender = sender or direct_alice
             direct_vm.value = seed
             res = contract.create_fund(p["name"], p["mandate"], p["single"], p["trade"], p["bond"],
-                                       p["appeal_bond"], p["window"], p["ends"], p["watch"])
+                                       p["appeal_bond"], p["window"], p["ends"], p["watch"], p["keeper"])
             direct_vm.value = 0
             cls.deposited += seed
             if not res["ok"]:
@@ -209,7 +209,7 @@ def world(direct_vm, direct_deploy, direct_alice, direct_bob, direct_charlie):
             direct_vm.strict_mocks = strict
 
         @classmethod
-        def mock_world(cls, llm=None, appeal=None, scan=None):
+        def mock_world(cls, llm=None, appeal=None, scan=None, lastlook=None):
             cls.reset_mocks()
             for url, page in cls.pages.items():
                 pattern = re.escape(url) + "$"
@@ -223,6 +223,8 @@ def world(direct_vm, direct_deploy, direct_alice, direct_bob, direct_charlie):
             direct_vm.mock_llm(r"MANDATE_APPEAL", appeal if isinstance(appeal, str) else json.dumps(appeal))
             scan = {"flagged": []} if scan is None else scan
             direct_vm.mock_llm(r"MANDATE_SCAN", scan if isinstance(scan, str) else json.dumps(scan))
+            lastlook = {"excluded": False, "adverse": False} if lastlook is None else lastlook
+            direct_vm.mock_llm(r"MANDATE_LASTLOOK", lastlook if isinstance(lastlook, str) else json.dumps(lastlook))
 
         @classmethod
         def resolve(cls, pid, llm=None, sender=None):
@@ -243,7 +245,8 @@ def world(direct_vm, direct_deploy, direct_alice, direct_bob, direct_charlie):
             return contract.scan(fid)
 
         @classmethod
-        def execute(cls, pid, sender=None):
+        def execute(cls, pid, sender=None, lastlook=None):
+            cls.mock_world(None, None, None, lastlook)
             direct_vm.sender = sender or direct_charlie
             return contract.execute(pid)
 

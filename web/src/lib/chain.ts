@@ -5,8 +5,8 @@
  */
 import { createAccount, createClient } from "genlayer-js";
 import { studionet } from "genlayer-js/chains";
-import type { Fund, Page, Params, Phase, Proposal, TxOutcome } from "./types.ts";
-import { TIME_DEPENDENT, REFUSALS, decodeRevert, plain, refusalKey, toFund, toParams, toProposal, type Raw } from "./decode.ts";
+import type { Fund, Page, Params, Phase, Prompts, Proposal, ProposerRecord, TxOutcome } from "./types.ts";
+import { TIME_DEPENDENT, REFUSALS, decodeRevert, plain, refusalKey, toFund, toParams, toPrompts, toProposal, toProposer, type Raw } from "./decode.ts";
 import { decodeReceiptResult } from "./calldata.ts";
 import { assertSignerReady, getProvider, type Signer } from "./signer.ts";
 
@@ -102,6 +102,15 @@ export async function getProposal(id: number): Promise<Proposal> {
 export async function listProposals(fundId: number, proposer = "", offset = 0, limit = 20): Promise<Page<Proposal>> {
   const r = (await view("list_proposals", [BigInt(fundId), proposer, BigInt(offset), BigInt(limit)])) as Raw;
   return { total: Number(r.total), items: (r.items as Raw[]).map(toProposal) };
+}
+
+export async function listProposers(limit = 10): Promise<ProposerRecord[]> {
+  const r = (await view("list_proposers", [BigInt(limit)])) as Raw;
+  return (r.items as Raw[]).map(toProposer);
+}
+
+export async function getPrompts(): Promise<Prompts> {
+  return toPrompts((await view("get_prompts", [])) as Raw);
 }
 
 export async function getStake(fundId: number, member: string): Promise<bigint> {

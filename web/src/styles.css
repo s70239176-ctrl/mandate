@@ -273,3 +273,26 @@ dialog.confirm::backdrop { background: rgba(2, 6, 5, 0.72); backdrop-filter: blu
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.reason { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 14px; padding: 10px 14px; border: 1px solid rgba(229, 118, 106, 0.35); border-left: 3px solid var(--red); border-radius: var(--r-sm); background: rgba(229, 118, 106, 0.06); }
+.reason .code { font: 500 12px var(--mono); color: var(--dim); }
+.board { display: grid; gap: 0; }
+.board .rowline { display: grid; grid-template-columns: 28px minmax(0, 1fr) repeat(4, 64px); gap: 8px; align-items: center; padding: 12px 18px; border-bottom: 1px solid var(--line); }
+.board .rowline:last-child { border-bottom: 0; }
+.board .hd { color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; background: var(--bg-2); }
+.board .n { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.codeblock { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 16px 18px; font: 12.5px/1.65 var(--mono); color: #cfe0d8; white-space: pre-wrap; overflow-wrap: anywhere; max-height: 420px; overflow: auto; }
+.codeblock mark { background: rgba(230, 195, 106, 0.18); color: var(--gold); padding: 0 2px; border-radius: 3px; }
+.tour { position: fixed; z-index: 40; right: 20px; bottom: 20px; width: min(380px, calc(100vw - 32px)); background: var(--surface); border: 1px solid rgba(79, 209, 161, 0.4); border-radius: var(--r-lg); padding: 18px 20px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6); }
+.tour .count { font: 500 11px var(--mono); color: var(--mint); letter-spacing: 0.1em; text-transform: uppercase; }
+.tour h3 { margin: 6px 0 6px; font-size: 20px; }
+.tour p { color: var(--muted); font-size: 13.5px; }
+.tour .dots { display: flex; gap: 5px; margin: 14px 0 0; }
+.tour .dots i { width: 18px; height: 3px; border-radius: 2px; background: var(--line-2); }
+.tour .dots i.on { background: var(--mint); }
+.flowline { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.flowline .box { border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; background: var(--surface); }
+.flowline .box.model { border-color: rgba(79, 209, 161, 0.4); background: var(--mint-soft); }
+.flowline .box.code { border-color: rgba(230, 195, 106, 0.35); background: var(--gold-soft); }
+.flowline .box b { display: block; margin-bottom: 4px; }
+.flowline .box span { color: var(--muted); font-size: 13px; }

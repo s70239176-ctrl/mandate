@@ -14,7 +14,7 @@ export function statusInfo(p: Proposal, now = Math.floor(Date.now() / 1000)): { 
     case "EXECUTED":
       return { label: "Executed", tone: "green" };
     case "REJECTED":
-      return { label: "Rejected", tone: "red" };
+      return { label: p.note === "last_look_blocked" ? "Blocked at execution" : "Rejected", tone: "red" };
     case "CANCELLED":
       return { label: "Cancelled by appeal", tone: "red" };
     case "EXPIRED":
@@ -28,6 +28,7 @@ const NOTES: Record<string, string> = {
   evidence_changed: "An evidence page no longer matched its fingerprint, so the proposal was rejected without asking the jury. The bond went to the treasury.",
   evidence_unavailable: "An evidence page could not be loaded on every spaced attempt. The bond was returned.",
   appeal_upheld: "A member's appeal documented a violation or material adverse fact. The allocation was cancelled and the proposer's bond went to the treasury.",
+  last_look_blocked: "At execution the evidence was re-read live and the trade was blocked. Nothing was paid and the bond was returned.",
   expired: "The proposal waited too long and was expired. Bonds were returned and the earmark released.",
 };
 export const noteText = (note: string): string => NOTES[note] ?? "";
@@ -120,7 +121,11 @@ export function stages(p: Proposal, now: number): Stage[] {
       s[1] = { ...s[1], state: "now", sub: p.evidenceState === "unavailable" ? "Page unreachable, retrying" : "Awaiting the jury" };
       break;
     case "REJECTED":
-      s[1] = { title: "Rejected", sub: p.note === "adverse_event" ? "Adverse development" : p.note === "mandate_violation" ? "Outside the mandate" : "Evidence problem", state: "bad" };
+      s[1] = p.note === "last_look_blocked" ? { title: "Approved", sub: "then blocked at execution", state: "done" } : { title: "Rejected", sub: p.note === "adverse_event" ? "Adverse development" : p.note === "mandate_violation" ? "Outside the mandate" : "Evidence problem", state: "bad" };
+      if (p.note === "last_look_blocked") {
+        s[2] = { ...s[2], state: "done", sub: "Closed" };
+        s[3] = { title: "Blocked", sub: "Evidence re-read at execution", state: "bad" };
+      }
       break;
     case "EXPIRED":
       s[1] = { title: "Expired", sub: "Released, bonds returned", state: "bad" };
@@ -145,4 +150,40 @@ export function stages(p: Proposal, now: number): Stage[] {
       break;
   }
   return s;
+}
+
+const REASONS: Record<string, string> = {
+  off_theme: "The evidence did not show an in-theme business",
+  insufficient_evidence: "The evidence was unusable or said nothing about the target",
+  evidence_changed: "An evidence page changed after it was committed",
+  evidence_unavailable: "An evidence page could not be loaded",
+  appeal_upheld: "A member's appeal documented a violation or adverse fact",
+  expired: "It waited too long and expired",
+  last_look_unavailable: "The evidence could not be re-read at execution",
+};
+const EXCLUDED_KINDS: Record<string, string> = {
+  labor: "a documented labor-rights violation",
+  safety: "a documented safety incident",
+  sector: "an excluded sector",
+  other: "a documented exclusion",
+};
+const ADVERSE_KINDS: Record<string, string> = {
+  insolvency: "insolvency",
+  fraud: "a fraud finding",
+  cancelled: "a cancelled project",
+  regulatory: "regulatory action",
+  other: "another adverse event",
+};
+
+/** A reason code, in plain words. Empty string for an approved or open proposal. */
+export function reasonText(reason: string): string {
+  if (!reason) return "";
+  if (REASONS[reason]) return REASONS[reason];
+  const m = reason.match(/^(last_look_)?(excluded|adverse)_(\w+)$/);
+  if (m) {
+    const late = m[1] ? " when the evidence was re-read at execution" : "";
+    if (m[2] === "excluded") return `The evidence showed ${EXCLUDED_KINDS[m[3]] ?? m[3]}, which the mandate excludes${late}`;
+    return `The evidence showed a material adverse development (${ADVERSE_KINDS[m[3]] ?? m[3]})${late}`;
+  }
+  return reason;
 }
