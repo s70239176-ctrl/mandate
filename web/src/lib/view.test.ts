@@ -71,3 +71,30 @@ test("decodeRevert reads a tagged utf-8 refusal and ignores garbage", () => {
   assert.equal(decodeRevert(""), undefined);
   assert.equal(decodeRevert(undefined), undefined);
 });
+
+test("stages: the stepper follows the protocol, including clock-aware approval", async () => {
+  const { stages, statusInfo } = await import("./view.ts");
+  const approved = toProposal(rawProposal({ status: "APPROVED", evidence_state: "ok", executable_at: 500, decided_at: 100 }));
+  assert.deepEqual(stages(approved, 200).map((s) => s.state), ["done", "done", "now", "later"]);
+  assert.deepEqual(stages(approved, 600).map((s) => s.state), ["done", "done", "done", "now"]);
+  assert.equal(statusInfo(approved, 200).label, "Approved, in appeal window");
+  assert.equal(statusInfo(approved, 600).label, "Approved, ready to execute");
+  const rejected = toProposal(rawProposal({ status: "REJECTED", evidence_state: "ok", note: "mandate_violation" }));
+  assert.deepEqual(stages(rejected, 0).map((s) => s.state), ["done", "bad", "later", "later"]);
+  const upheld = toProposal(rawProposal({ status: "CANCELLED", appeal_state: "UPHELD", note: "appeal_upheld" }));
+  assert.equal(stages(upheld, 0)[2].state, "bad");
+  const executed = toProposal(rawProposal({ status: "EXECUTED" }));
+  assert.ok(stages(executed, 0).every((s) => s.state === "done"));
+});
+
+test("toFund carries the standing watch", () => {
+  const f = toFund({
+    id: 1, creator: "0xAA", name: "n", mandate: "m", max_single_bps: 2000, max_trade_bps: 1000, max_single: 1n, max_trade: 1n,
+    bond: 1n, appeal_bond: 1n, appeal_window: 60, ends_at: 1, created_at: 0, total_stake: 1n, redeemed_stake: 0n, pool: 1n,
+    reserved: 0n, free: 1n, allocated: 0n, members: 1, proposal_ids: [], proposal_count: 0, positions: [],
+    watch_urls: ["https://news.example.org/a"], frozen: ["x"], last_scan_at: 5, scan_count: 2, open: true,
+  });
+  assert.deepEqual(f.watchUrls, ["https://news.example.org/a"]);
+  assert.deepEqual(f.frozen, ["x"]);
+  assert.equal(f.scanCount, 2);
+});

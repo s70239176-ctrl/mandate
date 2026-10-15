@@ -1,0 +1,133 @@
+{
+ "address": "0x2dE196c3203a77bB420aC696c7eb3CeC6EE16A68",
+ "fundId": 1,
+ "geothermalProposalLeftPending": 5,
+ "log": [
+  {
+   "what": "create_fund",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": {
+    "id": 1,
+    "ok": true,
+    "reason": ""
+   },
+   "hash": "0x2f309f0dee230992dc310d3dfc732864e87d5b301ab4a9f8f3345302868a6c67"
+  },
+  {
+   "what": "propose utility-scale solar",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": {
+    "id": 1,
+    "ok": true,
+    "reason": ""
+   },
+   "hash": "0xbf56207d9952165e8fd11dcca22883930280f9fa3efabb3b12f3222ac2e85dde"
+  },
+  {
+   "what": "propose onshore wind",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": {
+    "id": 2,
+    "ok": true,
+    "reason": ""
+   },
+   "hash": "0xdc85f331754c6b3cf725d2f5570b987f357a16c30909771144ff9f6c428cd6e9"
+  },
+  {
+   "what": "propose coal mining",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": {
+    "id": 3,
+    "ok": true,
+    "reason": ""
+   },
+   "hash": "0x91bda379df3e676833191e83ae25d60f2860bcb2f68ef1e9460333b0ef17e9bc"
+  },
+  {
+   "what": "propose hydropower",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": {
+    "id": 4,
+    "ok": true,
+    "reason": ""
+   },
+   "hash": "0x248e96a050e29ee5a57721db4fd7c3519207bcb3f3947ad4d425aee305a9f651"
+  },
+  {
+   "what": "propose geothermal",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": {
+    "id": 5,
+    "ok": true,
+    "reason": ""
+   },
+   "hash": "0x3739b2e250d0b4f2ce79821a7af5fbb5c48e42d6e4dbbf7f78477850cf9939e7"
+  },
+  {
+   "what": "resolve solar",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": "approved",
+   "hash": "0xaed01100ad49a563802d544513e5960d4eb30cbe2218a442dd363d66484e8af2"
+  },
+  {
+   "what": "resolve coal",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": "rejected",
+   "hash": "0x8916c0b568803d2c1b70ce5d1d531c76c4e6caf3baa56ed0cba0c9115138ab91"
+  },
+  {
+   "what": "resolve wind",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": "approved",
+   "hash": "0xf096c0cc507c8d2a6e9f2b2c81b1948181f3b8d4e4603452877bc207485d8954"
+  },
+  {
+   "what": "resolve hydro",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": "approved",
+   "hash": "0x68643d45bfaf62cde603c0200449c25c21a75964e705e98bc673c7304b105167"
+  },
+  {
+   "what": "appeal wind",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": {
+    "id": 2,
+    "ok": true,
+    "reason": ""
+   },
+   "hash": "0x6cd3c2eb15f2dc0f939b5ba7007e4f53f50fcaca85e648fb9ef3ed31853dfb9a"
+  },
+  {
+   "what": "resolve_appeal wind",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": "dismissed",
+   "hash": "0x798fa8e4e0f8b97e388f5d11bf89f5ee43a6d1d318ce5bf04c45ed65f779dc9e"
+  },
+  {
+   "what": "scan",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": "clear",
+   "hash": "0xfccbb839e294c27725f82a8bbcd29cf4847c871ccd431de7428e131785194d29"
+  },
+  {
+   "what": "execute solar",
+   "status": "ACCEPTED",
+   "revert": null,
+   "result": "executed",
+   "hash": "0xdd7fddff41a930b4d88ea84280a033fdbf5330985d2848e7ac41d9536b023fa2"
+  }
+ ]
+}

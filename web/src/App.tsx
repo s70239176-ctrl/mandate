@@ -89,6 +89,7 @@ export function App() {
               Create a fund
             </a>
           </nav>
+          <span className="net hide-sm">{NETWORK}</span>
           {signer ? (
             <div className="row">
               <span className="mono muted" title={signer.address}>

@@ -3,12 +3,12 @@ import type { Fund, Proposal } from "./types.ts";
 
 export type Tone = "green" | "amber" | "red" | "gray" | "teal";
 
-export function statusInfo(p: Proposal): { label: string; tone: Tone } {
+export function statusInfo(p: Proposal, now = Math.floor(Date.now() / 1000)): { label: string; tone: Tone } {
   switch (p.status) {
     case "PENDING":
       return { label: p.evidenceState === "unavailable" ? "Evidence unreachable, retrying" : "Awaiting jury", tone: "amber" };
     case "APPROVED":
-      return { label: "Approved, in appeal window", tone: "teal" };
+      return now < p.executableAt ? { label: "Approved, in appeal window", tone: "teal" } : { label: "Approved, ready to execute", tone: "green" };
     case "APPEALED":
       return { label: "Appealed, awaiting jury", tone: "amber" };
     case "EXECUTED":
@@ -98,4 +98,51 @@ export function timeline(p: Proposal, now: number): Step[] {
     state: p.status === "EXECUTED" ? "done" : open ? "later" : "now",
   });
   return steps;
+}
+
+export interface Stage {
+  title: string;
+  sub: string;
+  state: "done" | "now" | "later" | "bad";
+}
+
+/** The four-stage journey of one proposal, from real contract fields, for the stepper. */
+export function stages(p: Proposal, now: number): Stage[] {
+  const open = now < p.executableAt;
+  const s: Stage[] = [
+    { title: "Proposed", sub: "Evidence committed", state: "done" },
+    { title: "Jury", sub: "Validators read it", state: "later" },
+    { title: "Appeal window", sub: "Members may object", state: "later" },
+    { title: "Executed", sub: "GEN paid out", state: "later" },
+  ];
+  switch (p.status) {
+    case "PENDING":
+      s[1] = { ...s[1], state: "now", sub: p.evidenceState === "unavailable" ? "Page unreachable, retrying" : "Awaiting the jury" };
+      break;
+    case "REJECTED":
+      s[1] = { title: "Rejected", sub: p.note === "adverse_event" ? "Adverse development" : p.note === "mandate_violation" ? "Outside the mandate" : "Evidence problem", state: "bad" };
+      break;
+    case "EXPIRED":
+      s[1] = { title: "Expired", sub: "Released, bonds returned", state: "bad" };
+      break;
+    case "APPROVED":
+      s[1] = { ...s[1], state: "done", sub: "Approved" };
+      s[2] = { ...s[2], state: open ? "now" : "done", sub: open ? "Open now" : "Closed" };
+      s[3] = { ...s[3], state: open ? "later" : "now", sub: open ? "After the window" : "Ready to execute" };
+      break;
+    case "APPEALED":
+      s[1] = { ...s[1], state: "done", sub: "Approved" };
+      s[2] = { ...s[2], state: "now", sub: "Under appeal" };
+      break;
+    case "CANCELLED":
+      s[1] = { ...s[1], state: "done", sub: "Approved" };
+      s[2] = { title: "Appeal upheld", sub: "Allocation cancelled", state: "bad" };
+      break;
+    case "EXECUTED":
+      s[1] = { ...s[1], state: "done", sub: "Approved" };
+      s[2] = { ...s[2], state: "done", sub: "Closed" };
+      s[3] = { ...s[3], state: "done", sub: "Paid to the payee" };
+      break;
+  }
+  return s;
 }

@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { AlertTriangle, Check, CircleDashed, Loader2, X } from "lucide-react";
 import type { TxState } from "../hooks.ts";
-import { shortAddr } from "../lib/format.ts";
-import type { Tone } from "../lib/view.ts";
+import { formatGen, shortAddr } from "../lib/format.ts";
+import type { Step, Tone } from "../lib/view.ts";
 
-export function Logo({ size = 24 }: { size?: number }) {
+export function Logo({ size = 26 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true" focusable="false">
-      <rect width="64" height="64" rx="14" fill="#111a18" stroke="#33473f" strokeWidth="2" />
-      <path d="M14 46V20l18 16 18-16v26" fill="none" stroke="#5fd0a0" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx="32" cy="17" r="4" fill="#e8c46a" />
+      <rect width="64" height="64" rx="15" fill="#0e1815" stroke="#2a413a" strokeWidth="2" />
+      <path d="M14 47V21l18 16 18-16v26" fill="none" stroke="#4fd1a1" strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx="32" cy="16" r="4.2" fill="#e6c36a" />
     </svg>
   );
 }
@@ -23,7 +24,7 @@ const PHASE_TEXT = {
 /** Wording for a jury round: every validator fetches the evidence itself and forms its own verdict. */
 const JUDGING_TEXT = {
   ...PHASE_TEXT,
-  pending: "Sent. Each validator is fetching the evidence itself and forming its own verdict…",
+  pending: "Sent. Each validator is fetching the pages itself and forming its own verdict…",
   accepted: "The validators agreed. Waiting for finalization: GEN moves only when this finalizes.",
 } as const;
 
@@ -32,31 +33,41 @@ export function TxStatus({ state, doneText = "Done.", judging = false }: { state
   if (state.kind === "running")
     return (
       <div className="tx" role="status">
-        {(judging ? JUDGING_TEXT : PHASE_TEXT)[state.phase]} {state.detail && <span className="muted mono">[{state.detail}]</span>}
+        <Loader2 size={18} className="mint" style={{ animation: "spin 1s linear infinite", flex: "none", marginTop: 2 }} />
+        <div>
+          {(judging ? JUDGING_TEXT : PHASE_TEXT)[state.phase]} {state.detail && <span className="dim num">[{state.detail}]</span>}
+        </div>
       </div>
     );
   if (state.kind === "error")
     return (
       <div className="tx err" role="alert">
-        {state.message}
+        <AlertTriangle size={18} className="red" style={{ flex: "none", marginTop: 2 }} />
+        <div>{state.message}</div>
       </div>
     );
   const o = state.outcome;
   if (o.error)
     return (
       <div className="tx err" role="alert">
-        {o.error} <Copy text={o.hash} label={`tx ${shortAddr(o.hash)}`} />
+        <AlertTriangle size={18} className="red" style={{ flex: "none", marginTop: 2 }} />
+        <div>
+          {o.error} <Copy text={o.hash} label={`tx ${shortAddr(o.hash)}`} />
+        </div>
       </div>
     );
   return (
     <div className="tx ok" role="status">
-      {doneText}
-      {o.result ? <b> Result: {o.result}.</b> : null} <Copy text={o.hash} label={`tx ${shortAddr(o.hash)}`} />
+      <Check size={18} className="mint" style={{ flex: "none", marginTop: 2 }} />
+      <div>
+        {doneText}
+        {o.result ? <b> Result: {o.result}.</b> : null} <Copy text={o.hash} label={`tx ${shortAddr(o.hash)}`} />
+      </div>
     </div>
   );
 }
 
-export function Pill({ label, tone }: { label: string; tone: Tone }) {
+export function Pill({ label, tone }: { label: string; tone: Tone | "frozen" }) {
   return <span className={`pill ${tone}`}>{label}</span>;
 }
 
@@ -69,12 +80,81 @@ export function KV({ k, children }: { k: string; children: ReactNode }) {
   );
 }
 
-export function Stat({ k, v, s }: { k: string; v: ReactNode; s?: ReactNode }) {
+export function Tile({ icon, k, v, s }: { icon?: ReactNode; k: string; v: ReactNode; s?: ReactNode }) {
   return (
-    <div className="stat">
-      <div className="k">{k}</div>
+    <div className="tile">
+      <div className="k">
+        {icon}
+        {k}
+      </div>
       <div className="v">{v}</div>
       {s && <div className="s">{s}</div>}
+    </div>
+  );
+}
+
+export function Section({ title, aside, children }: { title: string; aside?: ReactNode; children: ReactNode }) {
+  return (
+    <section className="section">
+      <div className="head">
+        <h2>{title}</h2>
+        {aside}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+/** One bar for the whole treasury: what has been paid out, what open proposals earmark, and what is idle. */
+export function TreasuryBar({ allocated, reserved, free }: { allocated: bigint; reserved: bigint; free: bigint }) {
+  const total = allocated + reserved + free;
+  const pct = (x: bigint) => (total > 0n ? Number((x * 10000n) / total) / 100 : 0);
+  return (
+    <>
+      <div className="tbar" role="img" aria-label={`Allocated ${formatGen(allocated)}, earmarked ${formatGen(reserved)}, idle ${formatGen(free)} GEN`}>
+        <i className="a" style={{ width: `${pct(allocated)}%` }} />
+        <i className="r" style={{ width: `${pct(reserved)}%` }} />
+        <i className="f" style={{ width: `${pct(free)}%`, flex: 1 }} />
+      </div>
+      <div className="legend">
+        <div>
+          <i style={{ background: "var(--mint)" }} /> Allocated <b>{formatGen(allocated)}</b>
+        </div>
+        <div>
+          <i style={{ background: "var(--amber)" }} /> Earmarked <b>{formatGen(reserved)}</b>
+        </div>
+        <div>
+          <i style={{ background: "var(--line-2)" }} /> Idle <b>{formatGen(free)}</b>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function Stepper({ steps }: { steps: { title: string; sub: string; state: "done" | "now" | "later" | "bad" }[] }) {
+  return (
+    <div className="stepper" role="list">
+      {steps.map((s) => (
+        <div key={s.title} role="listitem" className={`step ${s.state}`}>
+          <b>{s.title}</b>
+          {s.sub}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** A compliance line: pass, fail or pending, with what was checked and the value that decided it. */
+export function CheckRow({ state, title, detail, value }: { state: "ok" | "no" | "wait"; title: string; detail?: string; value?: ReactNode }) {
+  const Icon = state === "ok" ? Check : state === "no" ? X : CircleDashed;
+  return (
+    <div className="check">
+      <Icon size={18} className={state} />
+      <div>
+        <div className="t">{title}</div>
+        {detail && <div className="d">{detail}</div>}
+      </div>
+      {value !== undefined && <div className="val">{value}</div>}
     </div>
   );
 }
@@ -92,7 +172,8 @@ export function Skeleton({ rows = 3 }: { rows?: number }) {
 export function ErrorBox({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
     <div className="tx err" role="alert">
-      {message}{" "}
+      <AlertTriangle size={18} className="red" style={{ flex: "none", marginTop: 2 }} />
+      <div className="grow">{message}</div>
       {onRetry && (
         <button className="ghost small" onClick={onRetry}>
           Retry
@@ -102,8 +183,13 @@ export function ErrorBox({ message, onRetry }: { message: string; onRetry?: () =
   );
 }
 
-export function Empty({ children }: { children: ReactNode }) {
-  return <div className="empty">{children}</div>;
+export function Empty({ title, children }: { title?: string; children?: ReactNode }) {
+  return (
+    <div className="empty">
+      {title && <b>{title}</b>}
+      {children}
+    </div>
+  );
 }
 
 /** Click to copy; shows the short label. */
@@ -111,7 +197,7 @@ export function Copy({ text, label }: { text: string; label?: string }) {
   const [done, setDone] = useState(false);
   return (
     <span
-      className="copy mono"
+      className="copy"
       title={`Copy ${text}`}
       onClick={() => {
         navigator.clipboard?.writeText(text).then(
@@ -153,7 +239,7 @@ export function Confirm({
   }, [open]);
   return (
     <dialog ref={ref} className="confirm" onCancel={(e) => (e.preventDefault(), onCancel())}>
-      <h3 style={{ margin: "0 0 8px", fontFamily: "var(--serif)", fontWeight: 400, fontSize: 24 }}>{title}</h3>
+      <h3 style={{ marginBottom: 10 }}>{title}</h3>
       <div className="muted">{children}</div>
       <div className="actions">
         <button onClick={onConfirm}>{confirmLabel}</button>
@@ -164,3 +250,5 @@ export function Confirm({
     </dialog>
   );
 }
+
+export type { Step };

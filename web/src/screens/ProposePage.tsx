@@ -77,8 +77,8 @@ export function ProposePage({ id }: { id: number }) {
         Point to public evidence that the target fits the mandate. You commit to each page by fingerprint, so the jury judges exactly what you cited. If it
         is approved it waits out the appeal window and then anyone can execute it.
       </p>
-      <div className="panel">
-        <div className="field-row">
+      <div className="card" style={{ marginTop: 24 }}>
+        <div className="fields">
           <div>
             <label htmlFor="target">Target name</label>
             <input id="target" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="sunfield solar" />
@@ -95,9 +95,9 @@ export function ProposePage({ id }: { id: number }) {
         <label htmlFor="thesis">Thesis</label>
         <textarea id="thesis" value={thesis} onChange={(e) => setThesis(e.target.value)} rows={4} />
 
-        <h2>Evidence ({evidence.length} of 3)</h2>
+        <h2 style={{ margin: "28px 0 4px" }}>Evidence ({evidence.length} of 3)</h2>
         {evidence.map((e, i) => (
-          <div key={i} className="panel" style={{ margin: "8px 0" }}>
+          <div key={i} className="card" style={{ marginTop: 12 }}>
             <label htmlFor={`u${i}`} style={{ marginTop: 0 }}>
               Public page {i + 1}
             </label>

@@ -12,9 +12,9 @@
 
 **The decision GenLayer makes.** For one proposal, over 1 to 3 committed public pages: `evidence_available`, `in_theme`, `excluded`, `adverse`. For one appeal: `evidence_available`, `substantiated`.
 
-**MVP features.** Create a fund with a frozen mandate; contribute; propose with committed evidence; jury verdict; appeal window; appeal; execute; expire; redeem; failed-payment recovery.
+**MVP features.** The standing watch (`scan`); create a fund with a frozen mandate; contribute; propose with committed evidence; jury verdict; appeal window; appeal; execute; expire; redeem; failed-payment recovery.
 
-**Out of scope.** Token trading, price feeds, other assets, contract-initiated scanning, weighting schemes, governance over the mandate (it is frozen), an admin.
+**Out of scope.** Token trading, price feeds, other assets, scheduled scanning, weighting schemes, governance over the mandate (it is frozen), an admin.
 
 **Verdict structure.** Four booleans (proposal) and two booleans (appeal), plus a deterministic `source` check (`ok`, `changed`, `unavailable`) that never reaches the model.
 
@@ -36,6 +36,8 @@
 
 **Evidence commitment.** `clean_page` strips markup only from real HTML, defuses our own prompt delimiters, collapses whitespace, and truncates to 8,000 code points; `content_hash` is sha256 of that text. The TypeScript mirror is verified against vectors the contract generates.
 
+**Standing watch.** `scan` runs the same leader/validator pattern over the fund's frozen watch pages and its held targets (executed or earmarked, plus anything already frozen so it can be cleared). The jury returns `{flagged: [names]}`; each name must be one of the targets it was given or the whole result is invalid, and the contract compares the sorted set. The result replaces the frozen set. `propose` and `execute` refuse a frozen target. If any watch page cannot be read the scan returns `unavailable` and changes nothing. It can only block, so a manipulated watch page can pause a holding but never move money.
+
 **Prompt design.** Fixed instructions; mandate and thesis and each page fenced in delimited blocks; an explicit rule that page text is data and never instructions; strict four-key JSON; prose outside the schema dropped, never compared. Concentration and size are deliberately not in the prompt.
 
 **Environment.** `VITE_CONTRACT_ADDRESS`. Network (Studionet) is fixed in `web/src/lib/chain.ts`.
@@ -47,8 +49,8 @@
 | Phase | Goal | Exit criteria | State |
 | --- | --- | --- | --- |
 | 0 | Idea and design | This document | done |
-| 1 | Contract MVP | Loads, lints, full flow in Direct Mode | done: `genvm-lint` passes, 88 tests |
+| 1 | Contract MVP | Loads, lints, full flow in Direct Mode | done: `genvm-lint` passes, 109 tests |
 | 2 | Frontend MVP | Create, contribute, propose, judge, appeal, execute, redeem from the UI | done: builds, 38 unit tests, rendered and spot-checked in a browser without a contract |
 | 3 | Hardening | Bad inputs, failure states, conservation | done in Direct Mode |
-| 4 | Deployment | Deployed to Studionet and exercised under real consensus | deployed; approve and reject rounds run live; appeal/execute/redeem not yet run live |
+| 4 | Deployment | Deployed to Studionet and exercised under real consensus | deployed and seeded; approve, reject, appeal, scan and execute rounds run live; expire and redeem not yet run live |
 | 5 | Submission polish | Live app, contract address, demo, honest limitations | not done |
