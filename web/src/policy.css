@@ -10,7 +10,8 @@
   --mandate-text-muted: #858899;
   --mandate-border: rgba(196, 199, 224, 0.19);
   --mandate-border-strong: rgba(196, 199, 224, 0.32);
-  --mandate-portal-amber: #ffb879;
+  --mandate-portal-amber: #ffb879; /* only inside the portal artwork */
+  --mandate-lavender: #b9a9ff;
   --mandate-portal-coral: #ff8c87;
   --mandate-portal-magenta: #d56cff;
   --mandate-violet: #6550d9;
@@ -63,7 +64,7 @@ button.linkbtn:hover:not(:disabled) { background: transparent; color: var(--mand
 .pcard { width: 100%; display: flex; align-items: center; gap: 12px; text-align: left; padding: 9px 14px; min-height: 48px; background: rgba(8, 9, 16, 0.66); color: var(--mandate-text); border: 1px solid var(--mandate-border); border-radius: 14px; backdrop-filter: blur(10px); font-weight: 400; }
 .pcard:hover:not(:disabled) { background: rgba(18, 19, 32, 0.78); border-color: var(--mandate-border-strong); }
 .pcard .ic { color: var(--mandate-text-secondary); display: grid; place-items: center; flex: none; transition: color 0.18s ease, transform 0.18s ease; }
-.pcard:hover .ic { color: var(--mandate-portal-amber); transform: scale(1.06); }
+.pcard:hover .ic { color: var(--mandate-lavender); transform: scale(1.06); }
 .pcard .pt { display: flex; flex-direction: column; min-width: 0; }
 .pcard b { font: 600 12.5px var(--sans); }
 .pcard small { font: 400 11px var(--sans); color: var(--mandate-text-muted); margin-top: 1px; }

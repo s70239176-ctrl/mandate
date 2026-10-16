@@ -8,8 +8,14 @@ import { useSession } from "../wallet-context.ts";
 export function Mark({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" fill="none" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="mandate-core" x1="8" y1="24" x2="24" y2="12" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#7a66ff" />
+          <stop offset="1" stopColor="#d56cff" />
+        </linearGradient>
+      </defs>
       <path d="M16 3 29 27H3L16 3Z" stroke="currentColor" strokeWidth="2.2" strokeLinejoin="round" />
-      <path d="M16 13.5 21.2 23H10.8L16 13.5Z" fill="currentColor" />
+      <path d="M16 13.5 21.2 23H10.8L16 13.5Z" fill="url(#mandate-core)" />
     </svg>
   );
 }

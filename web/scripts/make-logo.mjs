@@ -9,12 +9,13 @@ import sharp from "sharp";
 const out = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "docs", "brand");
 mkdirSync(out, { recursive: true });
 
-const DARK = { line: "#f4f4f7", core: "#ffb879", text: "#f4f4f7", bg: "#050609" };
-const LIGHT = { line: "#0b0c14", core: "#e2872f", text: "#0b0c14", bg: "#ffffff" };
+const DARK = { line: "#f4f4f7", core: ["#7a66ff", "#d56cff"], text: "#f4f4f7", bg: "#050609" };
+const LIGHT = { line: "#14122b", core: ["#5642d6", "#bf4fe6"], text: "#14122b", bg: "#ffffff" };
 
 // The mark, drawn in a 32x32 box.
+// The core is an indigo-to-magenta gradient (Mandate's own colours, from the portal and the primary action).
 const mark = (c, extra = "") =>
-  `<g ${extra}><path d="M16 3 29 27H3L16 3Z" fill="none" stroke="${c.line}" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 13.5 21.2 23H10.8L16 13.5Z" fill="${c.core}"/></g>`;
+  `<g ${extra}><defs><linearGradient id="core" x1="8" y1="24" x2="24" y2="12" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${c.core[0]}"/><stop offset="1" stop-color="${c.core[1]}"/></linearGradient></defs><path d="M16 3 29 27H3L16 3Z" fill="none" stroke="${c.line}" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 13.5 21.2 23H10.8L16 13.5Z" fill="url(#core)"/></g>`;
 
 const markSvg = (c) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="512" height="512" role="img" aria-label="Mandate">${mark(c)}</svg>\n`;
 

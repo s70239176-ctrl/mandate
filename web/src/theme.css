@@ -15,10 +15,11 @@
   --mint-2: #cdfa8f;
   --mint-ink: #0b1303;
   --mint-soft: rgba(184, 243, 106, 0.08);
-  --gold: #ffb879;
-  --gold-soft: rgba(255, 184, 121, 0.08);
+  --gold: #c9bbff;
+  --gold-soft: rgba(150, 130, 255, 0.09);
   --blue: #a7c8ff;
-  --accent: #ffc08a;
+  --accent: #b9a9ff;
+  --magenta: #d56cff;
   --violet: #6550d9;
   --serif: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
@@ -26,7 +27,7 @@
 body {
   background:
     radial-gradient(900px 460px at 82% -8%, rgba(213, 108, 255, 0.1), transparent 62%),
-    radial-gradient(760px 420px at 8% -4%, rgba(255, 184, 121, 0.06), transparent 60%),
+    radial-gradient(760px 420px at 8% -4%, rgba(150, 130, 255, 0.06), transparent 60%),
     var(--bg);
   background-attachment: fixed;
 }
@@ -38,7 +39,7 @@ a { color: var(--accent); }
 h1 { font-family: var(--sans); font-weight: 600; letter-spacing: -0.025em; font-size: 36px; }
 h3 { font-family: var(--sans); font-weight: 600; font-size: 19px; letter-spacing: -0.01em; }
 .big { font-family: var(--sans); font-weight: 500; font-size: 40px; }
-.charter .text { font-family: var(--sans); font-size: 16.5px; line-height: 1.7; color: #f6eedd; font-weight: 400; }
+.charter .text { font-family: var(--sans); font-size: 16.5px; line-height: 1.7; color: #ece8ff; font-weight: 400; }
 .fund-card h3 { font-size: 21px; }
 .empty b { font-family: var(--sans); font-size: 18px; font-weight: 600; }
 .eyebrow { color: var(--accent); }
@@ -53,7 +54,7 @@ button.danger { background: transparent; }
 button.outline, button.linkbtn, .pb-save, .pb-more, .switch, .pcard, .acct-btn, .acct-menu button, .chipbtn { border-color: revert-layer; }
 .pb-more, button.linkbtn, .acct-menu button { border: 0; }
 .chipbtn { background: transparent; color: var(--muted); border: 1px solid var(--line-2); }
-.chipbtn:hover:not(:disabled), .chipbtn.on { color: var(--accent); border-color: rgba(255, 192, 138, 0.6); background: var(--gold-soft); }
+.chipbtn:hover:not(:disabled), .chipbtn.on { color: var(--accent); border-color: rgba(185, 169, 255, 0.6); background: var(--gold-soft); }
 .pb-save { border: 1px solid rgba(160, 150, 255, 0.35); }
 .pcard { background: rgba(8, 9, 16, 0.66); border: 1px solid var(--mandate-border); }
 .switch { background: rgba(255, 255, 255, 0.1); border: 1px solid var(--mandate-border); }
@@ -68,22 +69,22 @@ input:focus, textarea:focus, select:focus { border-color: var(--blue); box-shado
 .fund-card:hover { border-color: var(--line-2); }
 th { background: var(--bg-2); }
 tr.link:hover td { background: var(--raised); }
-.charter { background: linear-gradient(180deg, rgba(255, 184, 121, 0.08), transparent 72%), var(--surface); border-color: rgba(255, 184, 121, 0.26); }
+.charter { background: linear-gradient(180deg, rgba(150, 130, 255, 0.08), transparent 72%), var(--surface); border-color: rgba(150, 130, 255, 0.26); }
 .charter .seal, .tag.gold { color: var(--accent); }
-.tag.gold { border-color: rgba(255, 192, 138, 0.35); }
+.tag.gold { border-color: rgba(185, 169, 255, 0.35); }
 .pos-bar::after { background: var(--accent); }
-.step.now::after { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 5px rgba(255, 184, 121, 0.16); }
+.step.now::after { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 5px rgba(150, 130, 255, 0.16); }
 .step.now b { color: var(--accent); }
 .timeline li.now::before { background: var(--accent); border-color: var(--accent); }
-.tbar .r { background: var(--accent); }
-.legend i[style*="amber"] { background: var(--accent) !important; }
-.pill.amber { color: var(--accent); border-color: rgba(255, 192, 138, 0.4); background: rgba(255, 184, 121, 0.08); }
+.tbar .r { background: var(--magenta); }
+.legend i[style*="amber"] { background: var(--magenta) !important; }
+.pill.amber { color: var(--amber); border-color: rgba(227, 160, 46, 0.4); background: rgba(227, 160, 46, 0.08); }
 .tour { border-color: rgba(167, 200, 255, 0.4); }
 .tour .count { color: var(--accent); }
 .tour .dots i.on { background: var(--accent); }
 .flowline .box.model { border-color: rgba(184, 243, 106, 0.4); background: rgba(184, 243, 106, 0.06); }
-.flowline .box.code { border-color: rgba(255, 192, 138, 0.35); background: var(--gold-soft); }
-.codeblock mark { background: rgba(255, 184, 121, 0.16); color: var(--accent); }
+.flowline .box.code { border-color: rgba(185, 169, 255, 0.35); background: var(--gold-soft); }
+.codeblock mark { background: rgba(150, 130, 255, 0.16); color: var(--accent); }
 .net { border-color: var(--line-2); }
 .net::before { background: var(--mint); box-shadow: 0 0 0 3px var(--mint-soft); }
 .tx { background: var(--surface); }

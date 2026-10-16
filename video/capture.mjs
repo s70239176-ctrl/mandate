@@ -79,7 +79,7 @@ async function capCard(shot) {
     html,body{margin:0;background:transparent;width:1920px;height:1080px;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#f4f4f7}
     .wrap{position:absolute;left:0;right:0;bottom:64px;display:flex;justify-content:center}
     .box{max-width:1380px;padding:22px 34px 24px;border-radius:20px;background:rgba(6,7,12,.86);border:1px solid rgba(196,199,224,.28);box-shadow:0 24px 70px rgba(0,0,0,.55)}
-    .step{font:600 19px Inter,"Segoe UI",Arial;letter-spacing:.16em;text-transform:uppercase;color:#ffc08a;margin-bottom:8px}
+    .step{font:600 19px Inter,"Segoe UI",Arial;letter-spacing:.16em;text-transform:uppercase;color:#b9a9ff;margin-bottom:8px}
     .cap{font:500 35px/1.34 Inter,"Segoe UI",Arial;letter-spacing:-.01em}
   </style><div class="wrap"><div class="box">${step}<div class="cap">${shot.caption}</div></div></div>`);
   await p.screenshot({ path: `frames/${shot.id}.cap.png`, omitBackground: true });
@@ -237,9 +237,9 @@ if (want("endcard")) {
     .m{display:flex;align-items:center;gap:22px;font:600 54px Inter,"Segoe UI",Arial;letter-spacing:.3em}
     h1{font:600 58px/1.15 Inter,"Segoe UI",Arial;letter-spacing:-.02em;margin:46px 0 14px}
     p{font:400 28px/1.5 Inter,"Segoe UI",Arial;color:#b9bbc8;margin:6px 0}
-    code{font:500 24px Consolas,monospace;color:#ffc08a}
+    code{font:500 24px Consolas,monospace;color:#b9a9ff}
     .pill{margin-top:34px;display:inline-block;padding:10px 24px;border:1px solid rgba(196,199,224,.3);border-radius:999px;font:500 22px Inter,"Segoe UI",Arial;color:#b9bbc8}
-  </style><div class="c"><div class="m"><svg width="64" height="64" viewBox="0 0 32 32" fill="none"><path d="M16 3 29 27H3L16 3Z" stroke="#f4f4f7" stroke-width="2.2" stroke-linejoin="round"/><path d="M16 13.5 21.2 23H10.8L16 13.5Z" fill="#ffb879"/></svg>MANDATE</div>
+  </style><div class="c"><div class="m"><svg width="64" height="64" viewBox="0 0 32 32" fill="none"><path d="M16 3 29 27H3L16 3Z" stroke="#f4f4f7" stroke-width="2.2" stroke-linejoin="round"/><defs><linearGradient id="c" x1="8" y1="24" x2="24" y2="12" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#7a66ff"/><stop offset="1" stop-color="#d56cff"/></linearGradient></defs><path d="M16 13.5 21.2 23H10.8L16 13.5Z" fill="url(#c)"/></svg>MANDATE</div>
   <h1>Bounded authority.<br/>Decided by validators. Enforced by code.</h1>
   <p>mandate-virid.vercel.app</p><p>github.com/s70239176-ctrl/mandate</p><p><code>${CONTRACT}</code></p>
   <div class="pill">Live on GenLayer Studionet (a test network, demo account)</div></div>`);
